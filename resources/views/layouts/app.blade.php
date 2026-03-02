@@ -31,50 +31,6 @@
 </head>
 <body>
     <div id="app">
-        {{--<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto"></ul>
-                    <ul class="navbar-nav ms-auto">
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
-            </div>
-        </nav>--}}
-
         <div class="site-navbar mt-4">
             <div class="container py-1">
                 <div class="row align-items-center">
@@ -140,35 +96,9 @@
             </div>
         </div>
 
-        <div class="slide-one-item home-slider owl-carousel">
-            <div class="site-blocks-cover overlay" style="background-image: url('{{ asset('assets/images/hero_bg_1.jpg') }}');" data-aos="fade" data-stellar-background-ratio="0.5">
-                <div class="container">
-                    <div class="row align-items-center justify-content-center text-center">
-                        <div class="col-md-10">
-                            <span class="d-inline-block bg-success text-white px-3 mb-3 property-offer-type rounded">For Rent</span>
-                            <h1 class="mb-2">871 Crenshaw Blvd</h1>
-                            <p class="mb-5"><strong class="h2 text-success font-weight-bold">$2,250,500</strong></p>
-                            <p><a href="#" class="btn btn-white btn-outline-white py-3 px-5 rounded-0 btn-2">See Details</a></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="site-blocks-cover overlay" style="background-image: url('{{ asset('assets/images/hero_bg_2.jpg') }}');" data-aos="fade" data-stellar-background-ratio="0.5">
-                <div class="container">
-                    <div class="row align-items-center justify-content-center text-center">
-                        <div class="col-md-10">
-                            <span class="d-inline-block bg-danger text-white px-3 mb-3 property-offer-type rounded">For Sale</span>
-                            <h1 class="mb-2">625 S. Berendo St</h1>
-                            <p class="mb-5"><strong class="h2 text-success font-weight-bold">$1,000,500</strong></p>
-                            <p><a href="#" class="btn btn-white btn-outline-white py-3 px-5 rounded-0 btn-2">See Details</a></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <main class="py-4">
+        <main>
             @yield('content')
         </main>
     </div>
