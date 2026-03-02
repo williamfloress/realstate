@@ -9,6 +9,7 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Fuentes y CSS del template (Bootstrap, Owl, AOS, etc.) desde public/assets -->
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
@@ -31,6 +32,7 @@
 </head>
 <body>
     <div id="app">
+        <!-- Barra de navegación del template (logo RealState + menú) -->
         <div class="site-navbar mt-4">
             <div class="container py-1">
                 <div class="row align-items-center">
@@ -65,6 +67,7 @@
                                 </li>
                                 <li><a href="{{ url('/about') }}">About</a></li>
                                 <li><a href="{{ url('/contact') }}">Contact</a></li>
+                                <!-- Invitado: Login/Register. Autenticado: nombre de usuario + dropdown (Dashboard, Logout). Bootstrap 4: data-toggle, dropdown-menu-right -->
                                 @guest
                                     @if (Route::has('login'))
                                         <li><a href="{{ route('login') }}">Login</a></li>
@@ -79,6 +82,7 @@
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                             <a class="dropdown-item" href="{{ url('/dashboard') }}">Dashboard</a>
+                                            <!-- Logout vía POST: el enlace envía el formulario oculto con CSRF -->
                                             <a class="dropdown-item" href="{{ route('logout') }}"
                                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                 {{ __('Logout') }}
@@ -96,12 +100,13 @@
             </div>
         </div>
 
-
-
+        <!-- Contenido de cada página (home, login, register, etc.) -->
         <main>
             @yield('content')
         </main>
     </div>
+
+    <!-- Footer del template: About RealState, enlaces, redes, crédito Colorlib -->
     <footer class="site-footer">
       <div class="container">
         <div class="row">
@@ -168,6 +173,7 @@
       </div>
     </footer>
 
+    <!-- Scripts del template (jQuery, Bootstrap 4, Owl Carousel, AOS, main.js). Orden: jQuery antes de Bootstrap. -->
     <script src="{{ asset('assets/js/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery-migrate-3.0.1.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery-ui.js') }}"></script>

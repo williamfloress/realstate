@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Hero: imagen de fondo y título "Log In" (estilo template inmobiliario) -->
     <div
         class="site-blocks-cover inner-page-cover overlay"
         style="background-image: url('{{ asset('assets/images/hero_bg_2.jpg') }}');"
@@ -15,6 +16,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Formulario de login: POST a route('login'), validación con @error y old() -->
     <div class="site-section">
         <div class="container">
             <div class="row">
@@ -68,6 +71,7 @@
                             @enderror
                         </div>
 
+                        <!-- Remember Me: mantiene sesión; logout usa formulario oculto con @csrf -->
                         <div class="form-group">
                             <div class="form-check">
                                 <input
@@ -90,6 +94,7 @@
                                 value="{{ __('Login') }}"
                             >
 
+                            <!-- Enlace a recuperar contraseña (solo si la ruta está registrada) -->
                             @if (Route::has('password.request'))
                                 <a
                                     class="btn btn-link"

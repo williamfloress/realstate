@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Hero con imagen de fondo y título "Register" -->
     <div
         class="site-blocks-cover inner-page-cover overlay"
         style="background-image: url('{{ asset('assets/images/hero_bg_2.jpg') }}');"
@@ -16,6 +17,7 @@
         </div>
     </div>
 
+    <!-- Formulario de registro: POST a route('register'). Campo name = nombre de usuario (Laravel lo guarda en users.name) -->
     <div class="site-section">
         <div class="container">
             <div class="row">
@@ -87,6 +89,7 @@
                             @enderror
                         </div>
 
+                        <!-- password_confirmation requerido por el validador de Laravel -->
                         <div class="form-group">
                             <label for="password-confirm">Confirm Password</label>
                             <input
