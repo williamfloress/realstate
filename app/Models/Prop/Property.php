@@ -78,6 +78,14 @@ class Property extends Model
     public $timestamps = true;
 
     /**
+     * Imágenes de la propiedad.
+     */
+    public function images(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PropImage::class)->orderBy('order');
+    }
+
+    /**
      * Agente (usuario) asignado al inmueble.
      */
     public function agent(): \Illuminate\Database\Eloquent\Relations\BelongsTo

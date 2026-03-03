@@ -37,9 +37,9 @@
             {{-- Carrusel de imágenes: principal + placeholders si no hay más --}}
             <div>
               <div class="slide-one-item home-slider owl-carousel">
-                <div><img src="{{ $coverImage }}" alt="{{ $singleProperty->title }}" class="img-fluid"></div>
-                <div><img src="{{ asset('assets/images/hero_bg_1.jpg') }}" alt="Image" class="img-fluid"></div>
-                <div><img src="{{ asset('assets/images/hero_bg_3.jpg') }}" alt="Image" class="img-fluid"></div>
+                @foreach ($images as $image)
+                <div><img src="{{ asset('assets/images/' . $image->path) }}" alt="{{ $singleProperty->title }}" class="img-fluid"></div>
+                @endforeach
               </div>
             </div>
             {{-- Cuerpo: precio, especificaciones (beds, baths, sqft), tipo de hogar, año, precio/sqft --}}
