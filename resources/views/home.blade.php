@@ -1,43 +1,46 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Carrusel hero (Owl Carousel): dos slides con imagen de fondo, tipo oferta, dirección, precio y botón -->
+    <!-- Carrusel hero: slides dinámicos desde $properties. Si no hay propiedades, se muestra un slide por defecto. -->
     <div class="slide-one-item home-slider owl-carousel">
-        <div
-            class="site-blocks-cover overlay"
-            style="background-image: url('{{ asset('assets/images/hero_bg_1.jpg') }}');"
-            data-aos="fade"
-            data-stellar-background-ratio="0.5"
-        >
-            <div class="container">
-                <div class="row align-items-center justify-content-center text-center">
-                    <div class="col-md-10">
-                        <span class="d-inline-block bg-success text-white px-3 mb-3 property-offer-type rounded">For Rent</span>
-                        <h1 class="mb-2">871 Crenshaw Blvd</h1>
-                        <p class="mb-5"><strong class="h2 text-success font-weight-bold">$2,250,500</strong></p>
-                        <p><a href="#" class="btn btn-white btn-outline-white py-3 px-5 rounded-0 btn-2">See Details</a></p>
+        @forelse ($properties as $property)
+            @php
+                // Clase según tipo de oferta (sale=rojo, rent/lease=verde)
+                $offerClass = ($property->offer_type ?? '') === 'sale' ? 'bg-danger' : 'bg-success';
+                $offerLabel = match($property->offer_type ?? '') {
+                    'sale' => 'For Sale',
+                    'rent' => 'For Rent',
+                    'lease' => 'For Lease',
+                    default => 'For Sale',
+                };
+                $bgImage = $property->image ? asset('assets/images/' . $property->image) : asset('assets/images/hero_bg_1.jpg');
+            @endphp
+            <div class="site-blocks-cover overlay" style="background-image: url('{{ $bgImage }}');" data-aos="fade" data-stellar-background-ratio="0.5">
+                <div class="container">
+                    <div class="row align-items-center justify-content-center text-center">
+                        <div class="col-md-10">
+                            <span class="d-inline-block {{ $offerClass }} text-white px-3 mb-3 property-offer-type rounded">{{ $offerLabel }}</span>
+                            <h1 class="mb-2">{{ $property->title ?? $property->address ?? 'Property' }}</h1>
+                            <p class="mb-5"><strong class="h2 text-success font-weight-bold">${{ number_format($property->price ?? 0, 0) }}</strong></p>
+                            <p><a href="#" class="btn btn-white btn-outline-white py-3 px-5 rounded-0 btn-2">See Details</a></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div
-            class="site-blocks-cover overlay"
-            style="background-image: url('{{ asset('assets/images/hero_bg_2.jpg') }}');"
-            data-aos="fade"
-            data-stellar-background-ratio="0.5"
-        >
-            <div class="container">
-                <div class="row align-items-center justify-content-center text-center">
-                    <div class="col-md-10">
-                        <span class="d-inline-block bg-danger text-white px-3 mb-3 property-offer-type rounded">For Sale</span>
-                        <h1 class="mb-2">625 S. Berendo St</h1>
-                        <p class="mb-5"><strong class="h2 text-success font-weight-bold">$1,000,500</strong></p>
-                        <p><a href="#" class="btn btn-white btn-outline-white py-3 px-5 rounded-0 btn-2">See Details</a></p>
+        @empty
+            <!-- Slide por defecto cuando no hay propiedades en BD -->
+            <div class="site-blocks-cover overlay" style="background-image: url('{{ asset('assets/images/hero_bg_1.jpg') }}');" data-aos="fade" data-stellar-background-ratio="0.5">
+                <div class="container">
+                    <div class="row align-items-center justify-content-center text-center">
+                        <div class="col-md-10">
+                            <span class="d-inline-block bg-success text-white px-3 mb-3 property-offer-type rounded">For Rent</span>
+                            <h1 class="mb-2">Welcome</h1>
+                            <p class="mb-5"><strong class="h2 text-success font-weight-bold">Find your dream property</strong></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endforelse
     </div>
 
     <!-- Sección de búsqueda: formulario con tipo de listado, oferta (venta/renta) y ciudad. Maqueta sin action. -->
@@ -120,39 +123,35 @@
                 </div>
             </div>
 
-            <!-- Grid de tarjetas de propiedades. Repetir col-md-6 col-lg-4 mb-4 para más resultados. -->
+            <!-- Grid de tarjetas: bucle dinámico desde $properties -->
             <div class="row">
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="property-entry h-100">
-                        <a href="#" class="property-thumbnail">
-                            <div class="offer-type-wrap">
-                                <span class="offer-type bg-danger">Sale</span>
-                                <span class="offer-type bg-success">Rent</span>
+                @foreach ($properties as $property)
+                    @php
+                        $offerLabel = match($property->offer_type ?? '') { 'sale' => 'Sale', 'rent' => 'Rent', 'lease' => 'Lease', default => 'Sale' };
+                        $cardImage = $property->image ? asset('assets/images/' . $property->image) : asset('assets/images/img_1.jpg');
+                    @endphp
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="property-entry h-100">
+                            <a href="#" class="property-thumbnail">
+                                <div class="offer-type-wrap">
+                                    <span class="offer-type {{ ($property->offer_type ?? '') === 'sale' ? 'bg-danger' : 'bg-success' }}">{{ $offerLabel }}</span>
+                                </div>
+                                <img src="{{ $cardImage }}" alt="{{ $property->title }}" class="img-fluid">
+                            </a>
+                            <div class="p-4 property-body">
+                                <a href="#" class="property-favorite"><span class="icon-heart-o"></span></a>
+                                <h2 class="property-title"><a href="#">{{ $property->title ?? $property->address ?? 'Property' }}</a></h2>
+                                <span class="property-location d-block mb-3"><span class="property-icon icon-room"></span> {{ $property->address ?? '' }} {{ $property->city ?? '' }}, {{ $property->state ?? '' }}</span>
+                                <strong class="property-price text-primary mb-3 d-block text-success">${{ number_format($property->price ?? 0, 0) }}</strong>
+                                <ul class="property-specs-wrap mb-3 mb-lg-0">
+                                    <li><span class="property-specs">Beds</span><span class="property-specs-number">{{ $property->beds ?? '-' }}</span></li>
+                                    <li><span class="property-specs">Baths</span><span class="property-specs-number">{{ $property->baths ?? '-' }}</span></li>
+                                    <li><span class="property-specs">SQ FT</span><span class="property-specs-number">{{ number_format($property->sqft ?? 0) }}</span></li>
+                                </ul>
                             </div>
-                            <img src="{{ asset('assets/images/img_1.jpg') }}" alt="Image" class="img-fluid">
-                        </a>
-                        <div class="p-4 property-body">
-                            <a href="#" class="property-favorite"><span class="icon-heart-o"></span></a>
-                            <h2 class="property-title"><a href="#">625 S. Berendo St</a></h2>
-                            <span class="property-location d-block mb-3"><span class="property-icon icon-room"></span> 625 S. Berendo St Unit 607 Los Angeles, CA 90005</span>
-                            <strong class="property-price text-primary mb-3 d-block text-success">$2,265,500</strong>
-                            <ul class="property-specs-wrap mb-3 mb-lg-0">
-                                <li>
-                                    <span class="property-specs">Beds</span>
-                                    <span class="property-specs-number">2 <sup>+</sup></span>
-                                </li>
-                                <li>
-                                    <span class="property-specs">Baths</span>
-                                    <span class="property-specs-number">2</span>
-                                </li>
-                                <li>
-                                    <span class="property-specs">SQ FT</span>
-                                    <span class="property-specs-number">7,000</span>
-                                </li>
-                            </ul>
                         </div>
                     </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
