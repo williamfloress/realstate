@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <!-- Formulario de login: POST a route('login'), validación con @error y old() -->
+    <!-- Formulario de login: POST a route('login'), validación con $errors y old() -->
     <div class="site-section">
         <div class="container">
             <div class="row">
@@ -41,17 +41,17 @@
                                 type="email"
                                 id="email"
                                 name="email"
-                                class="form-control @error('email') is-invalid @enderror"
+                                class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
                                 value="{{ old('email') }}"
                                 required
                                 autocomplete="email"
                                 autofocus
                             >
-                            @error('email')
+                            @if ($errors->has('email'))
                                 <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
+                                    <strong>{{ $errors->first('email') }}</strong>
                                 </span>
-                            @enderror
+                            @endif
                         </div>
 
                         <div class="form-group">
@@ -60,15 +60,15 @@
                                 type="password"
                                 id="password"
                                 name="password"
-                                class="form-control @error('password') is-invalid @enderror"
+                                class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}"
                                 required
                                 autocomplete="current-password"
                             >
-                            @error('password')
+                            @if ($errors->has('password'))
                                 <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
+                                    <strong>{{ $errors->first('password') }}</strong>
                                 </span>
-                            @enderror
+                            @endif
                         </div>
 
                         <!-- Remember Me: mantiene sesión; logout usa formulario oculto con @csrf -->
@@ -93,16 +93,9 @@
                                 class="btn btn-primary"
                                 value="{{ __('Login') }}"
                             >
-
-                            <!-- Enlace a recuperar contraseña (solo si la ruta está registrada) -->
-                            @if (Route::has('password.request'))
-                                <a
-                                    class="btn btn-link"
-                                    href="{{ route('password.request') }}"
-                                >
-                                    {{ __('Forgot Your Password?') }}
-                                </a>
-                            @endif
+                            <a class="btn btn-link" href="{{ route('password.request') }}">
+                                {{ __('Forgot Your Password?') }}
+                            </a>
                         </div>
                     </form>
                 </div>

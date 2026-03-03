@@ -13,5 +13,15 @@ class PropertiesController extends Controller
     {
         $properties = Property::select()->take(9)->orderBy('created_at', 'desc')->get();
         return view('home', compact('properties'));
-    }
+    }  
+    public function single($id)
+    {
+        $singleProperty = Property::findOrFail($id);
+        // Propiedades relacionadas: misma ciudad, excluyendo la actual (máx. 3)
+        $relatedProperties = Property::where('city', $singleProperty->city)
+            ->where('id', '!=', $singleProperty->id)
+            ->take(3)
+            ->get();
+        return view('properties.single_property', compact('singleProperty', 'relatedProperties'));
+    }   
 }

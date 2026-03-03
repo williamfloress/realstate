@@ -22,7 +22,7 @@
                             <span class="d-inline-block {{ $offerClass }} text-white px-3 mb-3 property-offer-type rounded">{{ $offerLabel }}</span>
                             <h1 class="mb-2">{{ $property->title ?? $property->address ?? 'Property' }}</h1>
                             <p class="mb-5"><strong class="h2 text-success font-weight-bold">${{ number_format($property->price ?? 0, 0) }}</strong></p>
-                            <p><a href="#" class="btn btn-white btn-outline-white py-3 px-5 rounded-0 btn-2">See Details</a></p>
+                            <p><a href="{{route('single.property', $property->id)}}" class="btn btn-white btn-outline-white py-3 px-5 rounded-0 btn-2">See Details</a></p>
                         </div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                     @endphp
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="property-entry h-100">
-                            <a href="#" class="property-thumbnail">
+                            <a href="{{route('single.property', $property->id)}}" class="property-thumbnail">
                                 <div class="offer-type-wrap">
                                     <span class="offer-type {{ ($property->offer_type ?? '') === 'sale' ? 'bg-danger' : 'bg-success' }}">{{ $offerLabel }}</span>
                                 </div>
