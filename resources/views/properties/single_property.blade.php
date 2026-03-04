@@ -95,26 +95,42 @@
           </div>
           <div class="col-lg-4">
 
-            {{-- Widget: formulario de contacto con el agente (requiere @csrf en Laravel) --}}
+            {{-- Widget: formulario de solicitud/inquiry (envía a RequestsController) --}}
             <div class="bg-white widget border rounded">
               <h3 class="h4 text-black widget-title mb-3">Contact Agent</h3>
-              <form action="{{ url('/contact') }}" method="POST" class="form-contact-agent">
+              @if(session('success'))
+                <div class="alert alert-success mb-3">{{ session('success') }}</div>
+              @endif
+              @if($errors->any())
+                <div class="alert alert-danger mb-3">
+                  <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+              @endif
+              <form action="{{ route('insert.request') }}" method="POST" class="form-contact-agent">
                 @csrf
                 <input type="hidden" name="property_id" value="{{ $singleProperty->id }}">
                 <div class="form-group">
                   <label for="contact-name">Name</label>
-                  <input type="text" id="contact-name" name="name" class="form-control" required>
+                  <input type="text" id="contact-name" name="name" class="form-control" value="{{ old('name', auth()->user()?->name) }}" required>
                 </div>
                 <div class="form-group">
                   <label for="contact-email">Email</label>
-                  <input type="email" id="contact-email" name="email" class="form-control" required>
+                  <input type="email" id="contact-email" name="email" class="form-control" value="{{ old('email', auth()->user()?->email) }}" required>
                 </div>
                 <div class="form-group">
                   <label for="contact-phone">Phone</label>
-                  <input type="text" id="contact-phone" name="phone" class="form-control">
+                  <input type="text" id="contact-phone" name="phone" class="form-control" value="{{ old('phone') }}" placeholder="Optional">
                 </div>
                 <div class="form-group">
-                  <input type="submit" id="submit-contact" class="btn btn-primary" value="Send Message">
+                  <label for="contact-message">Message</label>
+                  <textarea id="contact-message" name="message" class="form-control" rows="4" placeholder="Tell us about your interest in this property...">{{ old('message') }}</textarea>
+                </div>
+                <div class="form-group">
+                  <input type="submit" id="submit-contact" class="btn btn-primary" value="Send Request">
                 </div>
               </form>
             </div>

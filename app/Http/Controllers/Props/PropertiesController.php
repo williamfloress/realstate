@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Props;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Prop\Property;
 use App\Models\Prop\PropImage;
 
@@ -23,8 +22,9 @@ class PropertiesController extends Controller
         $relatedProperties = Property::where('city', $singleProperty->city)
             ->where('id', '!=', $singleProperty->id)
             ->take(3)
+            ->orderBy('created_at', 'desc')
             ->get();
         $images = PropImage::where('property_id', $id)->orderBy('order')->get(); 
         return view('properties.single_property', compact('singleProperty', 'relatedProperties', 'images'));
-    }   
-}
+    }
+} 
