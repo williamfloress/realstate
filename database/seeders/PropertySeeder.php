@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Prop\HomeType;
 use App\Models\Prop\Property;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -14,6 +15,7 @@ class PropertySeeder extends Seeder
     public function run(): void
     {
         $agentId = User::first()?->id;
+        $homeTypes = HomeType::pluck('id', 'home_type');
 
         $properties = [
             [
@@ -32,7 +34,7 @@ class PropertySeeder extends Seeder
                 'beds' => 4,
                 'baths' => 3,
                 'sqft' => 2800,
-                'home_type' => 'house',
+                'home_type_id' => $homeTypes['house'] ?? null,
                 'year_built' => 2015,
                 'price_per_sqft' => 803.75,
                 'featured' => true,
@@ -53,7 +55,7 @@ class PropertySeeder extends Seeder
                 'beds' => 2,
                 'baths' => 2,
                 'sqft' => 1430,
-                'home_type' => 'apartment',
+                'home_type_id' => $homeTypes['apartment'] ?? null,
                 'year_built' => 2018,
                 'price_per_sqft' => 699.65,
                 'featured' => true,
@@ -74,7 +76,7 @@ class PropertySeeder extends Seeder
                 'beds' => 3,
                 'baths' => 2,
                 'sqft' => 1850,
-                'home_type' => 'condo',
+                'home_type_id' => $homeTypes['condo'] ?? null,
                 'year_built' => 2020,
                 'price_per_sqft' => 459.46,
                 'featured' => false,
@@ -95,7 +97,7 @@ class PropertySeeder extends Seeder
                 'beds' => 5,
                 'baths' => 4,
                 'sqft' => 3200,
-                'home_type' => 'house',
+                'home_type_id' => $homeTypes['house'] ?? null,
                 'year_built' => 1995,
                 'price_per_sqft' => 390.63,
                 'featured' => false,
@@ -137,7 +139,7 @@ class PropertySeeder extends Seeder
                 'beds' => null,
                 'baths' => null,
                 'sqft' => 15000,
-                'home_type' => 'commercial',
+                'home_type_id' => $homeTypes['commercial'] ?? null,
                 'year_built' => null,
                 'price_per_sqft' => 30,
                 'featured' => false,

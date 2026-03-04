@@ -59,7 +59,7 @@
               <div class="row mb-5">
                 <div class="col-md-6 col-lg-4 text-center border-bottom border-top py-3">
                   <span class="d-inline-block text-black mb-0 caption-text">Home Type</span>
-                  <strong class="d-block">{{ ucfirst($singleProperty->home_type ?? '-') }}</strong>
+                  <strong class="d-block">{{ $singleProperty->homeType?->name ?? '-' }}</strong>
                 </div>
                 <div class="col-md-6 col-lg-4 text-center border-bottom border-top py-3">
                   <span class="d-inline-block text-black mb-0 caption-text">Year Built</span>
@@ -95,12 +95,25 @@
           </div>
           <div class="col-lg-4">
 
-            {{-- Widget: formulario de solicitud/inquiry (envía a RequestsController) --}}
+            {{-- Mensaje de éxito (guardar favorito o enviar solicitud). position:relative evita que bloquee la navegación. --}}
+            @if(session('success'))
+              <div class="alert alert-success alert-dismissible fade show mb-3" role="alert" style="position:relative;">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                {{ session('success') }}
+              </div>
+            @endif
+
+            {{-- Widget: formulario de solicitud de información sobre la propiedad --}}
+            {{-- Envía POST a route('insert.request') -> RequestsController@insertRequest --}}
             <div class="bg-white widget border rounded">
               <h3 class="h4 text-black widget-title mb-3">Contact Agent</h3>
-              @if(session('success'))
-                <div class="alert alert-success mb-3">{{ session('success') }}</div>
+              {{-- Mensaje de error (ej: solicitud duplicada para la misma propiedad) --}}
+              @if(session('error'))
+                <div class="alert alert-danger mb-3">{{ session('error') }}</div>
               @endif
+              {{-- Errores de validación (si el formulario se envió con datos inválidos) --}}
               @if($errors->any())
                 <div class="alert alert-danger mb-3">
                   <ul class="mb-0">
@@ -113,6 +126,7 @@
               <form action="{{ route('insert.request') }}" method="POST" class="form-contact-agent">
                 @csrf
                 <input type="hidden" name="property_id" value="{{ $singleProperty->id }}">
+                {{-- old() mantiene valores tras validación fallida; auth()->user() prellena si está logueado --}}
                 <div class="form-group">
                   <label for="contact-name">Name</label>
                   <input type="text" id="contact-name" name="name" class="form-control" value="{{ old('name', auth()->user()?->name) }}" required>
@@ -134,6 +148,29 @@
                 </div>
               </form>
             </div>
+
+            {{-- Widget: guardar propiedad en favoritos (debajo del formulario de contacto) --}}
+            @auth
+              <div class="bg-white widget border rounded mb-4 mt-4">
+                <form action="{{ route('save.property') }}" method="POST">
+                  @csrf
+                  <input type="hidden" name="property_id" value="{{ $singleProperty->id }}">
+                  <button type="submit" class="btn btn-outline-primary btn-block">
+                    @if($isSinglePropertySaved)
+                      <span class="icon-heart"></span> Quitar de favoritos
+                    @else
+                      <span class="icon-heart-o"></span> Guardar en favoritos
+                    @endif
+                  </button>
+                </form>
+              </div>
+            @else
+              <div class="bg-white widget border rounded mb-4 mt-4">
+                <a href="{{ route('login') }}" class="btn btn-outline-primary btn-block">
+                  <span class="icon-heart-o"></span> Inicia sesión para guardar
+                </a>
+              </div>
+            @endauth
 
             {{-- Widget: compartir en redes (URL actual de la página) --}}
             @php $shareUrl = url()->current(); $shareTitle = $singleProperty->title ?? 'Property'; @endphp
@@ -179,7 +216,19 @@
                   <img src="{{ $relImage }}" alt="{{ $property->title }}" class="img-fluid">
                 </a>
                 <div class="p-4 property-body">
-                  <a href="#" class="property-favorite"><span class="icon-heart-o"></span></a>
+                  @auth
+                    <form action="{{ route('save.property') }}" method="POST" class="d-inline">
+                      @csrf
+                      <input type="hidden" name="property_id" value="{{ $property->id }}">
+                      <button type="submit" class="property-favorite {{ $savedPropertyIds->contains($property->id) ? 'active' : '' }}" style="border:none;cursor:pointer;" title="{{ $savedPropertyIds->contains($property->id) ? 'Quitar de favoritos' : 'Guardar en favoritos' }}">
+                        <span class="{{ $savedPropertyIds->contains($property->id) ? 'icon-heart' : 'icon-heart-o' }}"></span>
+                      </button>
+                    </form>
+                  @else
+                    <a href="{{ route('login') }}" class="property-favorite" title="Inicia sesión para guardar">
+                      <span class="icon-heart-o"></span>
+                    </a>
+                  @endauth
                   <h2 class="property-title"><a href="{{ route('single.property', $property->id) }}">{{ $property->title ?? $property->address ?? 'Property' }}</a></h2>
                   <span class="property-location d-block mb-3"><span class="property-icon icon-room"></span> {{ $property->address ?? '' }} {{ $property->city ?? '' }}, {{ $property->state ?? '' }}</span>
                   <strong class="property-price text-primary mb-3 d-block text-success">${{ number_format($property->price ?? 0, 0) }}</strong>

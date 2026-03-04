@@ -54,9 +54,10 @@
                             <div class="select-wrap">
                                 <span class="icon icon-arrow_drop_down"></span>
                                 <select name="list-types" id="list-types" class="form-control d-block rounded-0">
-                                    <option value="">Condo</option>
-                                    <option value="">Commercial Building</option>
-                                    <option value="">Land Property</option>
+                                    <option value="">All Types</option>
+                                    @foreach ($homeTypes ?? [] as $ht)
+                                        <option value="{{ $ht->home_type }}">{{ $ht->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -96,19 +97,32 @@
     <!-- Sección de listado: barra de vista (módulo/lista), filtros All/Rent/Sale, orden y tarjetas de propiedades. -->
     <div class="site-section">
         <div class="container">
+            {{-- Mensaje de éxito al guardar propiedad (visible junto a las tarjetas) --}}
+            @if(session('success'))
+              <div class="row">
+                <div class="col-12 mb-3">
+                  <div class="alert alert-success alert-dismissible fade show" role="alert" style="position:relative;">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ session('success') }}
+                  </div>
+                </div>
+              </div>
+            @endif
             <!-- Barra de opciones de vista y orden (Sort by) -->
             <div class="row">
                 <div class="col-md-12">
                     <div class="view-options bg-white py-3 px-3 d-md-flex align-items-center">
                         <div class="mr-auto">
-                            <a href="{{ url('/') }}" class="icon-view view-module active"><span class="icon-view_module"></span></a>
-                            <a href="{{ url('/properties') }}" class="icon-view view-list"><span class="icon-view_list"></span></a>
+                            <a href="{{ route('home') }}" class="icon-view view-module active"><span class="icon-view_module"></span></a>
+                            <a href="{{ route('properties.index') }}" class="icon-view view-list"><span class="icon-view_list"></span></a>
                         </div>
                         <div class="ml-auto d-flex align-items-center">
                             <div>
-                                <a href="#" class="view-list px-3 border-right active">All</a>
-                                <a href="#" class="view-list px-3 border-right">Rent</a>
-                                <a href="#" class="view-list px-3">Sale</a>
+                                <a href="{{ route('properties.index') }}" class="view-list px-3 border-right {{ request()->is('properties') && !request()->is('properties/*') ? 'active' : '' }}">All</a>
+                                <a href="{{ route('properties.byType', 'rent') }}" class="view-list px-3 border-right {{ request()->is('rent') ? 'active' : '' }}">Rent</a>
+                                <a href="{{ route('properties.byType', 'buy') }}" class="view-list px-3 {{ request()->is('buy') ? 'active' : '' }}">Sale</a>
                             </div>
                             <div class="select-wrap">
                                 <span class="icon icon-arrow_drop_down"></span>
@@ -139,8 +153,20 @@
                                 <img src="{{ $cardImage }}" alt="{{ $property->title }}" class="img-fluid">
                             </a>
                             <div class="p-4 property-body">
-                                <a href="#" class="property-favorite"><span class="icon-heart-o"></span></a>
-                                <h2 class="property-title"><a href="#">{{ $property->title ?? $property->address ?? 'Property' }}</a></h2>
+                                @auth
+                                    <form action="{{ route('save.property') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="property_id" value="{{ $property->id }}">
+                                        <button type="submit" class="property-favorite {{ $savedPropertyIds->contains($property->id) ? 'active' : '' }}" style="border:none;cursor:pointer;" title="{{ $savedPropertyIds->contains($property->id) ? 'Quitar de favoritos' : 'Guardar en favoritos' }}">
+                                            <span class="{{ $savedPropertyIds->contains($property->id) ? 'icon-heart' : 'icon-heart-o' }}"></span>
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}" class="property-favorite" title="Inicia sesión para guardar">
+                                        <span class="icon-heart-o"></span>
+                                    </a>
+                                @endauth
+                                <h2 class="property-title"><a href="{{ route('single.property', $property->id) }}">{{ $property->title ?? $property->address ?? 'Property' }}</a></h2>
                                 <span class="property-location d-block mb-3"><span class="property-icon icon-room"></span> {{ $property->address ?? '' }} {{ $property->city ?? '' }}, {{ $property->state ?? '' }}</span>
                                 <strong class="property-price text-primary mb-3 d-block text-success">${{ number_format($property->price ?? 0, 0) }}</strong>
                                 <ul class="property-specs-wrap mb-3 mb-lg-0">

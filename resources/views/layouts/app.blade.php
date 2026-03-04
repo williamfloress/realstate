@@ -55,14 +55,14 @@
                                 <li class="active">
                                     <a href="{{ url('/') }}">Home</a>
                                 </li>
-                                <li><a href="{{ url('/buy') }}">Buy</a></li>
-                                <li><a href="{{ url('/rent') }}">Rent</a></li>
+                                <li><a href="{{ route('properties.byType', 'buy') }}">Buy</a></li>
+                                <li><a href="{{ route('properties.byType', 'rent') }}">Rent</a></li>
                                 <li class="has-children">
-                                    <a href="{{ url('/properties') }}">Properties</a>
+                                    <a href="{{ route('properties.index') }}">Properties</a>
                                     <ul class="dropdown arrow-top">
-                                        <li><a href="#">Condo</a></li>
-                                        <li><a href="#">Property Land</a></li>
-                                        <li><a href="#">Commercial Building</a></li>
+                                        @foreach ($homeTypes ?? [] as $ht)
+                                            <li><a href="{{ route('properties.byHomeType', $ht->home_type) }}">{{ $ht->name }}</a></li>
+                                        @endforeach
                                     </ul>
                                 </li>
                                 <li><a href="{{ url('/about') }}">About</a></li>

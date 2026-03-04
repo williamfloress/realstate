@@ -17,13 +17,6 @@ class Property extends Model
     public const OFFER_RENT = 'rent';
     public const OFFER_LEASE = 'lease';
 
-    /** Tipos de inmueble (condo, comercial, terreno, casa, etc.). */
-    public const HOME_TYPE_CONDO = 'condo';
-    public const HOME_TYPE_COMMERCIAL = 'commercial';
-    public const HOME_TYPE_LAND = 'land';
-    public const HOME_TYPE_HOUSE = 'house';
-    public const HOME_TYPE_APARTMENT = 'apartment';
-
     /** Estados del listado. */
     public const STATUS_DRAFT = 'draft';
     public const STATUS_ACTIVE = 'active';
@@ -48,7 +41,7 @@ class Property extends Model
         'beds',
         'baths',
         'sqft',
-        'home_type',
+        'home_type_id',
         'year_built',
         'price_per_sqft',
         'featured',
@@ -91,6 +84,14 @@ class Property extends Model
     public function agent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'agent_id');
+    }
+
+    /**
+     * Tipo de inmueble (condo, land, commercial, etc.).
+     */
+    public function homeType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(HomeType::class);
     }
 
     /**
