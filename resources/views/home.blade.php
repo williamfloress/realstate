@@ -43,11 +43,11 @@
         @endforelse
     </div>
 
-    <!-- Sección de búsqueda: formulario con tipo de listado, oferta (venta/renta) y ciudad. Maqueta sin action. -->
+    <!-- Sección de búsqueda: formulario con tipo de listado, oferta (venta/renta) y ciudad. -->
     <div class="site-section site-section-sm pb-0">
         <div class="container">
             <div class="row">
-                <form class="form-search col-md-12" style="margin-top: -100px;">
+                <form class="form-search col-md-12" style="margin-top: -100px;" action="{{ route('home') }}" method="GET">
                     <div class="row align-items-end">
                         <div class="col-md-3">
                             <label for="list-types">Listing Types</label>
@@ -56,7 +56,7 @@
                                 <select name="list-types" id="list-types" class="form-control d-block rounded-0">
                                     <option value="">All Types</option>
                                     @foreach ($homeTypes ?? [] as $ht)
-                                        <option value="{{ $ht->home_type }}">{{ $ht->name }}</option>
+                                        <option value="{{ $ht->home_type }}" {{ request('list-types') === $ht->home_type ? 'selected' : '' }}>{{ $ht->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -66,9 +66,10 @@
                             <div class="select-wrap">
                                 <span class="icon icon-arrow_drop_down"></span>
                                 <select name="offer-types" id="offer-types" class="form-control d-block rounded-0">
-                                    <option value="">For Sale</option>
-                                    <option value="">For Rent</option>
-                                    <option value="">For Lease</option>
+                                    <option value="">All</option>
+                                    <option value="sale" {{ request('offer-types') === 'sale' ? 'selected' : '' }}>For Sale</option>
+                                    <option value="rent" {{ request('offer-types') === 'rent' ? 'selected' : '' }}>For Rent</option>
+                                    <option value="lease" {{ request('offer-types') === 'lease' ? 'selected' : '' }}>For Lease</option>
                                 </select>
                             </div>
                         </div>
@@ -77,11 +78,10 @@
                             <div class="select-wrap">
                                 <span class="icon icon-arrow_drop_down"></span>
                                 <select name="select-city" id="select-city" class="form-control d-block rounded-0">
-                                    <option value="">New York</option>
-                                    <option value="">Brooklyn</option>
-                                    <option value="">London</option>
-                                    <option value="">Japan</option>
-                                    <option value="">Philippines</option>
+                                    <option value="">All Cities</option>
+                                    @foreach ($cities ?? [] as $city)
+                                        <option value="{{ $city }}" {{ request('select-city') === $city ? 'selected' : '' }}>{{ $city }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>

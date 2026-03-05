@@ -19,13 +19,40 @@ use Illuminate\Support\Facades\Auth;
  */
 class PropertiesController extends Controller
 {
-    public function index()
+    /**
+     * Lista propiedades en home. Aplica filtros del formulario de búsqueda
+     * (list-types, offer-types, select-city) si se envían por GET.
+     */
+    public function index(Request $request)
     {
-        $properties = Property::with('homeType')->take(9)->orderBy('created_at', 'desc')->get();
-        // IDs de propiedades guardadas por el usuario (para mostrar corazón lleno)
+        $query = Property::with('homeType')->orderBy('created_at', 'desc');
+
+        // Filtro por tipo de inmueble (condo, house, land, etc.)
+        if ($request->filled('list-types')) {
+            $homeType = HomeType::where('home_type', $request->input('list-types'))->first();
+            if ($homeType) {
+                $query->where('home_type_id', $homeType->id);
+            }
+        }
+
+        // Filtro por tipo de oferta (sale, rent, lease)
+        if ($request->filled('offer-types')) {
+            $query->where('offer_type', $request->input('offer-types'));
+        }
+
+        // Filtro por ciudad
+        if ($request->filled('select-city')) {
+            $query->where('city', $request->input('select-city'));
+        }
+
+        $properties = $request->hasAny(['list-types', 'offer-types', 'select-city'])
+            ? $query->get()
+            : $query->take(9)->get();
+
         $savedPropertyIds = Auth::check()
             ? SavedProperties::where('user_id', Auth::id())->pluck('property_id')
             : collect();
+
         return view('home', compact('properties', 'savedPropertyIds'));
     }
 
