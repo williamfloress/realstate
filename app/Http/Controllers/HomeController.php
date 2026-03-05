@@ -13,16 +13,30 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->only(['index']);
     }
 
     /**
      * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
     {
         return view('home');
+    }
+
+    /**
+     * Página About (pública).
+     */
+    public function about()
+    {
+        return view('pages.about');
+    }
+
+    /**
+     * Página de contacto (pública).
+     */
+    public function contact()
+    {
+        return view('pages.contact');
     }
 }

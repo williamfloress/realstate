@@ -45,4 +45,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /** Relación: un usuario puede tener muchas solicitudes de información. */
+    public function requests()
+    {
+        return $this->hasMany(\App\Models\Prop\Request::class);
+    }
+
+    /** Relación: propiedades guardadas en favoritos por el usuario. */
+    public function savedProperties()
+    {
+        return $this->hasMany(\App\Models\Prop\SavedProperties::class);
+    }
 }

@@ -128,4 +128,34 @@ class PropertiesController extends Controller
         ]);
         return back()->with('success', 'Propiedad guardada en favoritos.');
     }
+
+    /**
+     * Lista propiedades ordenadas por precio ascendente (menor a mayor).
+     * Ruta: /properties/price-asc
+     */
+    public function priceAsc()
+    {
+        $properties = Property::with('homeType')->orderBy('price', 'asc')->get();
+        $savedPropertyIds = Auth::check()
+            ? SavedProperties::where('user_id', Auth::id())->pluck('property_id')
+            : collect();
+        $filterLabel = 'Price: Low to High';
+
+        return view('home', compact('properties', 'savedPropertyIds', 'filterLabel'));
+    }
+
+    /**
+     * Lista propiedades ordenadas por precio descendente (mayor a menor).
+     * Ruta: /properties/price-desc
+     */
+    public function priceDesc()
+    {
+        $properties = Property::with('homeType')->orderBy('price', 'desc')->get();
+        $savedPropertyIds = Auth::check()
+            ? SavedProperties::where('user_id', Auth::id())->pluck('property_id')
+            : collect();
+        $filterLabel = 'Price: High to Low';
+
+        return view('home', compact('properties', 'savedPropertyIds', 'filterLabel'));
+    }
 } 

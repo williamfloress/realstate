@@ -65,8 +65,8 @@
                                         @endforeach
                                     </ul>
                                 </li>
-                                <li><a href="{{ url('/about') }}">About</a></li>
-                                <li><a href="{{ url('/contact') }}">Contact</a></li>
+                                <li><a href="{{ route('about') }}">About</a></li>
+                                <li><a href="{{ route('contact') }}">Contact</a></li>
                                 <!-- Invitado: Login/Register. Autenticado: nombre de usuario + dropdown (Dashboard, Logout). Bootstrap 4: data-toggle, dropdown-menu-right -->
                                 @guest
                                     @if (Route::has('login'))
@@ -81,7 +81,8 @@
                                             {{ Auth::user()->name }}
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                            <a class="dropdown-item" href="{{ url('/dashboard') }}">Dashboard</a>
+                                            <a class="dropdown-item" href="{{ route('user.requests') }}">Mis solicitudes</a>
+                                            <a class="dropdown-item" href="{{ route('user.favorites') }}">Mis favoritos</a>
                                             <!-- Logout vía POST: el enlace envía el formulario oculto con CSRF -->
                                             <a class="dropdown-item" href="{{ route('logout') }}"
                                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -126,17 +127,17 @@
               </div>
               <div class="col-md-6 col-lg-6">
                 <ul class="list-unstyled">
-                  <li><a href="#">Home</a></li>
-                  <li><a href="#">Buy</a></li>
-                  <li><a href="#">Rent</a></li>
-                  <li><a href="#">Properties</a></li>
+                  <li><a href="{{ route('home') }}">Home</a></li>
+                  <li><a href="{{ route('properties.byType', 'buy') }}">Buy</a></li>
+                  <li><a href="{{ route('properties.byType', 'rent') }}">Rent</a></li>
+                  <li><a href="{{ route('properties.index') }}">Properties</a></li>
                 </ul>
               </div>
               <div class="col-md-6 col-lg-6">
                 <ul class="list-unstyled">
-                  <li><a href="#">About Us</a></li>
+                  <li><a href="{{ route('about') }}">About Us</a></li>
                   <li><a href="#">Privacy Policy</a></li>
-                  <li><a href="#">Contact Us</a></li>
+                  <li><a href="{{ route('contact') }}">Contact Us</a></li>
                   <li><a href="#">Terms</a></li>
                 </ul>
               </div>

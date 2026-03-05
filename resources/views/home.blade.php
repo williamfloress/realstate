@@ -122,15 +122,10 @@
                             <div>
                                 <a href="{{ route('properties.index') }}" class="view-list px-3 border-right {{ request()->is('properties') && !request()->is('properties/*') ? 'active' : '' }}">All</a>
                                 <a href="{{ route('properties.byType', 'rent') }}" class="view-list px-3 border-right {{ request()->is('rent') ? 'active' : '' }}">Rent</a>
-                                <a href="{{ route('properties.byType', 'buy') }}" class="view-list px-3 {{ request()->is('buy') ? 'active' : '' }}">Sale</a>
-                            </div>
-                            <div class="select-wrap">
-                                <span class="icon icon-arrow_drop_down"></span>
-                                <select class="form-control form-control-sm d-block rounded-0">
-                                    <option value="">Sort by</option>
-                                    <option value="">Price Ascending</option>
-                                    <option value="">Price Descending</option>
-                                </select>
+                                <a href="{{ route('properties.byType', 'buy') }}" class="view-list px-3 border-right {{ request()->is('buy') ? 'active' : '' }}">Sale</a>
+                                <a href="{{ route('price.asc.properties') }}" class="view-list px-3 border-right {{ request()->is('properties/price-asc') ? 'active' : '' }}">Price ↑</a>
+                                <a href="{{ route('price.desc.properties') }}" class="view-list px-3 {{ request()->is('properties/price-desc') ? 'active' : '' }}">Price ↓</a>
+
                             </div>
                         </div>
                     </div>
