@@ -29,6 +29,12 @@
     <link rel="stylesheet" href="{{ asset('assets/css/fl-bigmug-line.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/aos.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <style>
+        /* Icono clickeable para abrir el dropdown del select */
+        .select-wrap .select-dropdown-trigger {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -188,5 +194,44 @@
     <script src="{{ asset('assets/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('assets/js/aos.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.select-dropdown-trigger').forEach(function(trigger) {
+                var targetId = trigger.getAttribute('data-target');
+                var select = document.getElementById(targetId);
+                if (!select) return;
+
+                select.addEventListener('blur', function() {
+                    select.dataset.dropdownOpen = 'false';
+                });
+
+                function toggleDropdown() {
+                    if (select.dataset.dropdownOpen === 'true') {
+                        select.blur();
+                        select.dataset.dropdownOpen = 'false';
+                    } else {
+                        select.focus();
+                        if (typeof select.showPicker === 'function') {
+                            select.showPicker();
+                        } else {
+                            select.click();
+                        }
+                        select.dataset.dropdownOpen = 'true';
+                    }
+                }
+
+                trigger.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleDropdown();
+                });
+                trigger.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleDropdown();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

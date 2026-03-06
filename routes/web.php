@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Props\PropertiesController;
 use App\Http\Controllers\Props\RequestsController;
 use App\Http\Controllers\Users\UserController;
+use App\Http\Controllers\Admins\AdminController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,3 +50,16 @@ Route::post('/requests', [RequestsController::class, 'insertRequest'])->name('in
 Route::post('/save-property', [PropertiesController::class, 'saveProperty'])
     ->name('save.property')
     ->middleware('auth');
+
+
+// Admin
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('/login', [AdminController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [AdminController::class, 'login'])->name('login.submit');
+    });
+    Route::middleware('auth:admin')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'adminDasboard'])->name('dashboard');
+        Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+    });
+});

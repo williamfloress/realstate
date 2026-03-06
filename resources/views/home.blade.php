@@ -52,7 +52,7 @@
                         <div class="col-md-3">
                             <label for="list-types">Listing Types</label>
                             <div class="select-wrap">
-                                <span class="icon icon-arrow_drop_down"></span>
+                                <span class="icon icon-arrow_drop_down select-dropdown-trigger" data-target="list-types" role="button" tabindex="0" aria-label="Abrir menú"></span>
                                 <select name="list-types" id="list-types" class="form-control d-block rounded-0">
                                     <option value="">All Types</option>
                                     @foreach ($homeTypes ?? [] as $ht)
@@ -64,7 +64,7 @@
                         <div class="col-md-3">
                             <label for="offer-types">Offer Type</label>
                             <div class="select-wrap">
-                                <span class="icon icon-arrow_drop_down"></span>
+                                <span class="icon icon-arrow_drop_down select-dropdown-trigger" data-target="offer-types" role="button" tabindex="0" aria-label="Abrir menú"></span>
                                 <select name="offer-types" id="offer-types" class="form-control d-block rounded-0">
                                     <option value="">All</option>
                                     <option value="sale" {{ request('offer-types') === 'sale' ? 'selected' : '' }}>For Sale</option>
@@ -76,7 +76,7 @@
                         <div class="col-md-3">
                             <label for="select-city">Select City</label>
                             <div class="select-wrap">
-                                <span class="icon icon-arrow_drop_down"></span>
+                                <span class="icon icon-arrow_drop_down select-dropdown-trigger" data-target="select-city" role="button" tabindex="0" aria-label="Abrir menú"></span>
                                 <select name="select-city" id="select-city" class="form-control d-block rounded-0">
                                     <option value="">All Cities</option>
                                     @foreach ($cities ?? [] as $city)
