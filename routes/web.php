@@ -6,6 +6,7 @@ use App\Http\Controllers\Props\PropertiesController;
 use App\Http\Controllers\Props\RequestsController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Admins\AdminController;
+use App\Http\Controllers\Admins\AdminUserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,5 +62,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'adminDasboard'])->name('dashboard');
         Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+
+        // Admin users management
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
     });
 });

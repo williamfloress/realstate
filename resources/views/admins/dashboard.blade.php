@@ -45,8 +45,10 @@
                 <div class="card-body">
                     <h5 class="card-title text-primary mb-3">Admins</h5>
                     <p class="card-text mb-0">
-                        <span class="h4 font-weight-bold">3</span>
-                        <small class="text-muted d-block">administradores</small>
+                        <a href="{{ route('admin.users.index') }}" class="text-decoration-none text-dark">
+                            <span class="h4 font-weight-bold">{{ $adminCount }}</span>
+                            <small class="text-muted d-block">administradores</small>
+                        </a>
                     </p>
                 </div>
             </div>

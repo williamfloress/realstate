@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admins;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -33,7 +34,8 @@ class AdminController extends Controller
     }
 
     public function adminDasboard(){
-        return view('admins.dashboard');
+        $adminCount = Admin::count();
+        return view('admins.dashboard', compact('adminCount'));
     }
     public function logout(Request $request)
     {
