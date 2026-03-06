@@ -25,7 +25,7 @@ class PropertiesController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Property::with('homeType')->orderBy('created_at', 'desc');
+        $query = Property::with('homeType')->active()->orderBy('created_at', 'desc');
 
         // Filtro por tipo de inmueble (condo, house, land, etc.)
         if ($request->filled('list-types')) {
@@ -62,7 +62,7 @@ class PropertiesController extends Controller
      */
     public function byType(string $type)
     {
-        $query = Property::query()->orderBy('created_at', 'desc');
+        $query = Property::query()->active()->orderBy('created_at', 'desc');
 
         if ($type === 'buy') {
             $query->where('offer_type', Property::OFFER_SALE);
@@ -84,7 +84,7 @@ class PropertiesController extends Controller
      */
     public function all()
     {
-        $properties = Property::with('homeType')->orderBy('created_at', 'desc')->get();
+        $properties = Property::with('homeType')->active()->orderBy('created_at', 'desc')->get();
         $savedPropertyIds = Auth::check()
             ? SavedProperties::where('user_id', Auth::id())->pluck('property_id')
             : collect();
@@ -99,6 +99,7 @@ class PropertiesController extends Controller
     {
         $type = HomeType::where('home_type', $homeType)->firstOrFail();
         $properties = Property::with('homeType')
+            ->active()
             ->where('home_type_id', $type->id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -112,7 +113,8 @@ class PropertiesController extends Controller
     public function single($id)
     {
         $singleProperty = Property::with('homeType')->findOrFail($id);
-        $relatedProperties = Property::where('city', $singleProperty->city)
+        $relatedProperties = Property::active()
+            ->where('city', $singleProperty->city)
             ->where('id', '!=', $singleProperty->id)
             ->take(3)
             ->orderBy('created_at', 'desc')
@@ -162,7 +164,7 @@ class PropertiesController extends Controller
      */
     public function priceAsc()
     {
-        $properties = Property::with('homeType')->orderBy('price', 'asc')->get();
+        $properties = Property::with('homeType')->active()->orderBy('price', 'asc')->get();
         $savedPropertyIds = Auth::check()
             ? SavedProperties::where('user_id', Auth::id())->pluck('property_id')
             : collect();
@@ -177,7 +179,7 @@ class PropertiesController extends Controller
      */
     public function priceDesc()
     {
-        $properties = Property::with('homeType')->orderBy('price', 'desc')->get();
+        $properties = Property::with('homeType')->active()->orderBy('price', 'desc')->get();
         $savedPropertyIds = Auth::check()
             ? SavedProperties::where('user_id', Auth::id())->pluck('property_id')
             : collect();

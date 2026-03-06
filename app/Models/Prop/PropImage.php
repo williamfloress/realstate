@@ -4,6 +4,7 @@ namespace App\Models\Prop;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 
 /**
  * Modelo de imagen de propiedad. Cada registro representa una foto asociada a un inmueble.
@@ -37,5 +38,16 @@ class PropImage extends Model
     public function property(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Property::class);
+    }
+
+    /**
+     * URL pública de la imagen. Soporta rutas legacy (assets/images/) y subidas (storage/properties/).
+     */
+    public function getUrlAttribute(): string
+    {
+        if (Str::startsWith($this->path, 'properties/')) {
+            return asset('storage/' . $this->path);
+        }
+        return asset('assets/images/' . $this->path);
     }
 }

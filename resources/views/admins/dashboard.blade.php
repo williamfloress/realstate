@@ -23,8 +23,10 @@
                 <div class="card-body">
                     <h5 class="card-title text-primary mb-3">Properties</h5>
                     <p class="card-text mb-0">
-                        <span class="h4 font-weight-bold">8</span>
-                        <small class="text-muted d-block">propiedades registradas</small>
+                        <a href="{{ route('admin.properties.index') }}" class="text-decoration-none text-dark">
+                            <span class="h4 font-weight-bold">{{ $propertyCount }}</span>
+                            <small class="text-muted d-block">propiedades registradas</small>
+                        </a>
                     </p>
                 </div>
             </div>
@@ -34,8 +36,10 @@
                 <div class="card-body">
                     <h5 class="card-title text-primary mb-3">Home Types</h5>
                     <p class="card-text mb-0">
-                        <span class="h4 font-weight-bold">4</span>
-                        <small class="text-muted d-block">tipos de vivienda</small>
+                        <a href="{{ route('admin.hometypes.index') }}" class="text-decoration-none text-dark">
+                            <span class="h4 font-weight-bold">{{ $homeTypeCount }}</span>
+                            <small class="text-muted d-block">tipos de vivienda</small>
+                        </a>
                     </p>
                 </div>
             </div>

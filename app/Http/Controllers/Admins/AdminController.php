@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admins;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Admin;
+use App\Models\Prop\HomeType;
+use App\Models\Prop\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -35,7 +37,9 @@ class AdminController extends Controller
 
     public function adminDasboard(){
         $adminCount = Admin::count();
-        return view('admins.dashboard', compact('adminCount'));
+        $homeTypeCount = HomeType::count();
+        $propertyCount = Property::count();
+        return view('admins.dashboard', compact('adminCount', 'homeTypeCount', 'propertyCount'));
     }
     public function logout(Request $request)
     {

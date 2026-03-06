@@ -4,9 +4,7 @@
 
 @php
     // Imagen de portada: usa la imagen de la propiedad o una por defecto
-    $coverImage = ($singleProperty->image ?? null)
-        ? asset('assets/images/' . $singleProperty->image)
-        : asset('assets/images/hero_bg_2.jpg');
+    $coverImage = $singleProperty->image_url ?: asset('assets/images/hero_bg_2.jpg');
     // Etiqueta y clase según tipo de oferta (sale=rojo, rent/lease=verde)
     $offerLabel = match($singleProperty->offer_type ?? '') {
         'sale' => 'For Sale',
@@ -38,7 +36,7 @@
             <div>
               <div class="slide-one-item home-slider owl-carousel">
                 @foreach ($images as $image)
-                <div><img src="{{ asset('assets/images/' . $image->path) }}" alt="{{ $singleProperty->title }}" class="img-fluid"></div>
+                <div><img src="{{ $image->url }}" alt="{{ $singleProperty->title }}" class="img-fluid"></div>
                 @endforeach
               </div>
             </div>
@@ -75,19 +73,19 @@
 
               {{-- Galería: imágenes de la propiedad (usa asset() para rutas correctas) --}}
               @php
-                $galleryImages = ['img_1.jpg', 'img_2.jpg', 'img_3.jpg', 'img_4.jpg', 'img_5.jpg', 'img_6.jpg'];
-                if ($singleProperty->image ?? null) {
-                    array_unshift($galleryImages, $singleProperty->image);
+                $galleryImages = $images->map(fn($img) => $img->url)->values()->all();
+                if (empty($galleryImages)) {
+                    $galleryImages = ['img_1.jpg', 'img_2.jpg', 'img_3.jpg', 'img_4.jpg', 'img_5.jpg', 'img_6.jpg'];
+                    $galleryImages = array_map(fn($img) => asset('assets/images/' . $img), $galleryImages);
                 }
               @endphp
               <div class="row no-gutters mt-5">
                 <div class="col-12">
                   <h2 class="h4 text-black mb-3">Gallery</h2>
                 </div>
-                @foreach (array_slice($galleryImages, 0, 8) as $img)
-                  @php $imgPath = 'assets/images/' . $img; @endphp
+                @foreach (array_slice($galleryImages, 0, 8) as $imgUrl)
                   <div class="col-sm-6 col-md-4 col-lg-3">
-                    <a href="{{ asset($imgPath) }}" class="image-popup gal-item"><img src="{{ asset($imgPath) }}" alt="{{ $singleProperty->title }}" class="img-fluid"></a>
+                    <a href="{{ $imgUrl }}" class="image-popup gal-item"><img src="{{ $imgUrl }}" alt="{{ $singleProperty->title }}" class="img-fluid"></a>
                   </div>
                 @endforeach
               </div>
@@ -205,7 +203,7 @@
               $relOfferLabel = match($property->offer_type ?? '') { 'sale' => 'Sale', 'rent' => 'Rent', 'lease' => 'Lease', default => 'Sale' };
               $relOfferClass = ($property->offer_type ?? '') === 'sale' ? 'bg-danger' : 'bg-success';
               $relClass = ($property->offer_type ?? '') === 'lease' ? 'bg-info' : $relOfferClass;
-              $relImage = $property->image ? asset('assets/images/' . $property->image) : asset('assets/images/img_1.jpg');
+              $relImage = $property->image_url ?? asset('assets/images/img_1.jpg');
             @endphp
             <div class="col-md-6 col-lg-4 mb-4">
               <div class="property-entry h-100">

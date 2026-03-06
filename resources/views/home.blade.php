@@ -13,7 +13,7 @@
                     'lease' => 'For Lease',
                     default => 'For Sale',
                 };
-                $bgImage = $property->image ? asset('assets/images/' . $property->image) : asset('assets/images/hero_bg_1.jpg');
+                $bgImage = $property->image_url ?: asset('assets/images/hero_bg_1.jpg');
             @endphp
             <div class="site-blocks-cover overlay" style="background-image: url('{{ $bgImage }}');" data-aos="fade" data-stellar-background-ratio="0.5">
                 <div class="container">
@@ -137,7 +137,7 @@
                 @foreach ($properties as $property)
                     @php
                         $offerLabel = match($property->offer_type ?? '') { 'sale' => 'Sale', 'rent' => 'Rent', 'lease' => 'Lease', default => 'Sale' };
-                        $cardImage = $property->image ? asset('assets/images/' . $property->image) : asset('assets/images/img_1.jpg');
+                        $cardImage = $property->image_url ?: asset('assets/images/img_1.jpg');
                     @endphp
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="property-entry h-100">

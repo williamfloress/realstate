@@ -7,6 +7,8 @@ use App\Http\Controllers\Props\RequestsController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Admins\AdminController;
 use App\Http\Controllers\Admins\AdminUserController;
+use App\Http\Controllers\Admins\AdminPropertyController;
+use App\Http\Controllers\Admins\HomeTypeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -67,5 +69,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
         Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+
+        // Home types (tipos de propiedades)
+        Route::get('/hometypes', [HomeTypeController::class, 'index'])->name('hometypes.index');
+        Route::get('/hometypes/create', [HomeTypeController::class, 'create'])->name('hometypes.create');
+        Route::post('/hometypes', [HomeTypeController::class, 'store'])->name('hometypes.store');
+
+        // Properties (propiedades)
+        Route::get('/properties', [AdminPropertyController::class, 'index'])->name('properties.index');
+        Route::get('/properties/create', [AdminPropertyController::class, 'create'])->name('properties.create');
+        Route::post('/properties', [AdminPropertyController::class, 'store'])->name('properties.store');
+        Route::get('/properties/{property}/edit', [AdminPropertyController::class, 'edit'])->name('properties.edit');
+        Route::put('/properties/{property}', [AdminPropertyController::class, 'update'])->name('properties.update');
+        Route::patch('/properties/{property}/status', [AdminPropertyController::class, 'updateStatus'])->name('properties.updateStatus');
+        Route::delete('/properties/{property}', [AdminPropertyController::class, 'destroy'])->name('properties.destroy');
     });
 });

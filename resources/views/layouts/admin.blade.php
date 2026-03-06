@@ -5,10 +5,11 @@
     <!-- This file has been downloaded from Bootsnipp.com. Enjoy! -->
     <title>Admin Panel</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-     <link href="{{ asset('assets/styles/styles.css') }}" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link href="{{ asset('assets/vendor/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/styles/styles.css') }}" rel="stylesheet">
+    <script src="{{ asset('assets/vendor/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/bootstrap.min.js') }}"></script>
 </head>
 <body class="{{ auth()->guard('admin')->check() ? 'admin-logged-in' : 'admin-guest' }}">
 <div id="wrapper">
@@ -32,10 +33,10 @@
             <a class="nav-link" href="{{ route('admin.users.index') }}" style="margin-left: 20px;">Admins</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="hometypes-admins/show-hometype.html" style="margin-left: 20px;">Hometypes</a>
+            <a class="nav-link" href="{{ route('admin.hometypes.index') }}" style="margin-left: 20px;">Hometypes</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="properties-admins/show-properties.html" style="margin-left: 20px;">Properties</a>
+            <a class="nav-link" href="{{ route('admin.properties.index') }}" style="margin-left: 20px;">Properties</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="requests-admins/show-requests.html" style="margin-left: 20px;">Requests</a>

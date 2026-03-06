@@ -20,7 +20,11 @@ class Property extends Model
     /** Estados del listado. */
     public const STATUS_DRAFT = 'draft';
     public const STATUS_ACTIVE = 'active';
+    public const STATUS_PAUSED = 'paused';
     public const STATUS_CLOSED = 'closed';
+    public const STATUS_SOLD = 'sold';
+    public const STATUS_RENTED = 'rented';
+    public const STATUS_RESERVED = 'reserved';
 
     protected $fillable = [
         'title',
@@ -46,6 +50,8 @@ class Property extends Model
         'price_per_sqft',
         'featured',
         'agent_id',
+        'closed_at',
+        'reserved_at',
     ];
 
     /**
@@ -65,6 +71,8 @@ class Property extends Model
             'sqft' => 'integer',
             'year_built' => 'integer',
             'featured' => 'boolean',
+            'closed_at' => 'datetime',
+            'reserved_at' => 'datetime',
         ];
     }
 
@@ -108,5 +116,19 @@ class Property extends Model
     public function scopeActive($query)
     {
         return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    /**
+     * URL de la imagen principal. Soporta rutas legacy (assets/images/) y subidas (storage/properties/).
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) {
+            return null;
+        }
+        if (str_starts_with($this->image, 'properties/')) {
+            return asset('storage/' . $this->image);
+        }
+        return asset('assets/images/' . $this->image);
     }
 }
