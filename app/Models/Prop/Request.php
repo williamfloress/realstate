@@ -32,7 +32,16 @@ class Request extends Model
         'property_id',
         'user_id',
         'status',
+        'admin_response',
+        'responded_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'responded_at' => 'datetime',
+        ];
+    }
 
     /** Relación: cada request pertenece a una propiedad. */
     public function property()

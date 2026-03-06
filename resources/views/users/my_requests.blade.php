@@ -60,6 +60,12 @@
                             @if($req->message)
                                 <p class="mb-0 mt-2"><strong>Mensaje:</strong> {{ Str::limit($req->message, 150) }}</p>
                             @endif
+                            @if($req->admin_response)
+                                <div class="mt-2 p-2 bg-light rounded">
+                                    <strong>Respuesta del agente:</strong>
+                                    <p class="mb-0 mt-1">{{ $req->admin_response }}</p>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

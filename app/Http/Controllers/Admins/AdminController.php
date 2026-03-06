@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Admin;
 use App\Models\Prop\HomeType;
 use App\Models\Prop\Property;
+use App\Models\Prop\Request as PropRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -39,7 +40,8 @@ class AdminController extends Controller
         $adminCount = Admin::count();
         $homeTypeCount = HomeType::count();
         $propertyCount = Property::count();
-        return view('admins.dashboard', compact('adminCount', 'homeTypeCount', 'propertyCount'));
+        $requestCount = PropRequest::count();
+        return view('admins.dashboard', compact('adminCount', 'homeTypeCount', 'propertyCount', 'requestCount'));
     }
     public function logout(Request $request)
     {

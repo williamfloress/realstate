@@ -39,7 +39,7 @@
             <a class="nav-link" href="{{ route('admin.properties.index') }}" style="margin-left: 20px;">Properties</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="requests-admins/show-requests.html" style="margin-left: 20px;">Requests</a>
+            <a class="nav-link" href="{{ route('admin.requests.index') }}" style="margin-left: 20px;">Requests</a>
           </li>
         </ul>
         @endauth

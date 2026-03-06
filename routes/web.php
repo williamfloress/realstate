@@ -8,6 +8,7 @@ use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Admins\AdminController;
 use App\Http\Controllers\Admins\AdminUserController;
 use App\Http\Controllers\Admins\AdminPropertyController;
+use App\Http\Controllers\Admins\AdminRequestController;
 use App\Http\Controllers\Admins\HomeTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -83,5 +84,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/properties/{property}', [AdminPropertyController::class, 'update'])->name('properties.update');
         Route::patch('/properties/{property}/status', [AdminPropertyController::class, 'updateStatus'])->name('properties.updateStatus');
         Route::delete('/properties/{property}', [AdminPropertyController::class, 'destroy'])->name('properties.destroy');
+
+        // Requests (solicitudes)
+        Route::get('/requests', [AdminRequestController::class, 'index'])->name('requests.index');
+        Route::get('/requests/{propRequest}', [AdminRequestController::class, 'show'])->name('requests.show');
+        Route::put('/requests/{propRequest}', [AdminRequestController::class, 'update'])->name('requests.update');
     });
 });

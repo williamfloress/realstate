@@ -57,6 +57,19 @@
                 </div>
             </div>
         </div>
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary mb-3">Requests</h5>
+                    <p class="card-text mb-0">
+                        <a href="{{ route('admin.requests.index') }}" class="text-decoration-none text-dark">
+                            <span class="h4 font-weight-bold">{{ $requestCount }}</span>
+                            <small class="text-muted d-block">solicitudes</small>
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Acciones rápidas --}}
