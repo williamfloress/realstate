@@ -11,7 +11,7 @@
         <div class="container">
             <div class="row align-items-center justify-content-center text-center">
                 <div class="col-md-10">
-                    <h1 class="mb-2">Register</h1>
+                    <h1 class="mb-2">{{ __('messages.Register') }}</h1>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
                     data-aos="fade-up"
                     data-aos-delay="100"
                 >
-                    <h3 class="h4 text-black widget-title mb-3">Register</h3>
+                    <h3 class="h4 text-black widget-title mb-3">{{ __('messages.Register') }}</h3>
 
                     <form
                         method="POST"
@@ -36,7 +36,7 @@
                         @csrf
 
                         <div class="form-group">
-                            <label for="name">Username</label>
+                            <label for="name">{{ __('messages.Username') }}</label>
                             <input
                                 type="text"
                                 id="name"
@@ -73,7 +73,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="password">Password</label>
+                            <label for="password">{{ __('messages.Password') }}</label>
                             <input
                                 type="password"
                                 id="password"
@@ -106,7 +106,7 @@
                             <input
                                 type="submit"
                                 class="btn btn-primary"
-                                value="{{ __('Register') }}"
+                                value="{{ __('messages.Register') }}"
                             >
                         </div>
                     </form>

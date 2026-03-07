@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admins;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Admin;
+use App\Models\AgentApplication;
 use App\Models\Prop\HomeType;
 use App\Models\Prop\Property;
 use App\Models\Prop\Request as PropRequest;
@@ -41,7 +42,8 @@ class AdminController extends Controller
         $homeTypeCount = HomeType::count();
         $propertyCount = Property::count();
         $requestCount = PropRequest::count();
-        return view('admins.dashboard', compact('adminCount', 'homeTypeCount', 'propertyCount', 'requestCount'));
+        $pendingAgentApplicationsCount = AgentApplication::where('status', AgentApplication::STATUS_PENDING)->count();
+        return view('admins.dashboard', compact('adminCount', 'homeTypeCount', 'propertyCount', 'requestCount', 'pendingAgentApplicationsCount'));
     }
     public function logout(Request $request)
     {

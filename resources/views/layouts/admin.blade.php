@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <!-- This file has been downloaded from Bootsnipp.com. Enjoy! -->
-    <title>Admin Panel</title>
+    <title>Umbral — Panel Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{{ asset('assets/vendor/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/styles/styles.css') }}" rel="stylesheet">
@@ -15,7 +15,7 @@
 <div id="wrapper">
     <nav class="navbar header-top fixed-top navbar-expand-lg  navbar-dark bg-dark">
       <div class="container">
-      <a class="navbar-brand" href="#">LOGO</a>
+      <a class="navbar-brand" href="#" style="font-family:'Playfair Display',serif;font-weight:700;">Umbral<span style="color:#D4A373;">.</span></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -36,10 +36,19 @@
             <a class="nav-link" href="{{ route('admin.hometypes.index') }}" style="margin-left: 20px;">Hometypes</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.sectores.index') }}" style="margin-left: 20px;">Sectores (AMC)</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.properties.index') }}" style="margin-left: 20px;">Properties</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.requests.index') }}" style="margin-left: 20px;">Requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.agent-applications.index') }}" style="margin-left: 20px;">Solicitudes de agentes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('amc.index') }}" style="margin-left: 20px;">AMC</a>
           </li>
         </ul>
         @endauth

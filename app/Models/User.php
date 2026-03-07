@@ -17,10 +17,15 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    public const ROLE_USER = 'user';
+    public const ROLE_AGENT = 'agent';
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'phone',
     ];
 
     /**
@@ -56,5 +61,20 @@ class User extends Authenticatable
     public function savedProperties()
     {
         return $this->hasMany(\App\Models\Prop\SavedProperties::class);
+    }
+
+    public function agentApplication()
+    {
+        return $this->hasOne(AgentApplication::class);
+    }
+
+    public function properties()
+    {
+        return $this->hasMany(\App\Models\Prop\Property::class, 'agent_id');
+    }
+
+    public function isAgent(): bool
+    {
+        return ($this->role ?? '') === self::ROLE_AGENT;
     }
 }

@@ -6,29 +6,34 @@ use App\Models\Prop\Property;
 use App\Models\Prop\PropImage;
 use Illuminate\Database\Seeder;
 
-/**
- * Seeder que inserta imágenes de galería para cada propiedad.
- * Usa archivos existentes en public/assets/images/.
- */
 class PropImageSeeder extends Seeder
 {
     /**
-     * Imágenes disponibles en public/assets/images/ (mismo directorio que PropertySeeder).
+     * Cada imagen principal se mapea a una galería de 3 fotos de su mismo set.
+     * La galería comienza con la imagen principal y rota las otras dos del set.
      */
-    private array $availableImages = [
-        'hero_bg_1.jpg',
-        'hero_bg_2.jpg',
-        'img_1.jpg',
-        'img_2.jpg',
-        'img_3.jpg',
-        'img_4.jpg',
-        'img_5.jpg',
-        'img_6.jpg',
+    private array $galleries = [
+        'apto_1.png'        => ['apto_1.png', 'apto_1_vista2.png', 'apto_1_vista3.png'],
+        'apto_1_vista2.png' => ['apto_1_vista2.png', 'apto_1_vista3.png', 'apto_1.png'],
+        'apto_1_vista3.png' => ['apto_1_vista3.png', 'apto_1.png', 'apto_1_vista2.png'],
+
+        'apto_2_vista1.png' => ['apto_2_vista1.png', 'apto_2_vista2.png', 'apto_2_vista3.png'],
+        'apto_2_vista2.png' => ['apto_2_vista2.png', 'apto_2_vista3.png', 'apto_2_vista1.png'],
+        'apto_2_vista3.png' => ['apto_2_vista3.png', 'apto_2_vista1.png', 'apto_2_vista2.png'],
+
+        'apto_3_vista1.png' => ['apto_3_vista1.png', 'apto_3_vista2.png', 'apto_3_vista3.png'],
+        'apto_3_vista2.png' => ['apto_3_vista2.png', 'apto_3_vista3.png', 'apto_3_vista1.png'],
+        'apto_3_vista3.png' => ['apto_3_vista3.png', 'apto_3_vista1.png', 'apto_3_vista2.png'],
+
+        'apto_4_vista1.png' => ['apto_4_vista1.png', 'apto_4_vista2.png', 'apto_4_vista3.png'],
+        'apto_4_vista2.png' => ['apto_4_vista2.png', 'apto_4_vista3.png', 'apto_4_vista1.png'],
+        'apto_4_vista3.png' => ['apto_4_vista3.png', 'apto_4_vista1.png', 'apto_4_vista2.png'],
     ];
 
-    /**
-     * Ejecuta el seeder: obtiene todas las propiedades y crea imágenes para cada una.
-     */
+    private array $fallbackGallery = [
+        'apto_1.png', 'apto_2_vista1.png', 'apto_3_vista1.png',
+    ];
+
     public function run(): void
     {
         $properties = Property::all();
@@ -38,43 +43,23 @@ class PropImageSeeder extends Seeder
             return;
         }
 
+        $captions = ['Vista principal', 'Vista interior', 'Vista adicional'];
+        $created = 0;
+
         foreach ($properties as $property) {
-            $this->seedImagesForProperty($property);
+            $images = $this->galleries[$property->image] ?? $this->fallbackGallery;
+
+            foreach ($images as $order => $path) {
+                PropImage::create([
+                    'property_id' => $property->id,
+                    'path'        => $path,
+                    'caption'     => $captions[$order] ?? null,
+                    'order'       => $order,
+                ]);
+                $created++;
+            }
         }
-    }
 
-    /**
-     * Crea hasta 6 imágenes para una propiedad: la principal primero, luego el resto.
-     */
-    private function seedImagesForProperty(Property $property): void
-    {
-        // Imagen principal de la propiedad como primera del carrusel
-        $mainImage = $property->image ?? 'img_1.jpg';
-        $others = array_values(array_filter(
-            $this->availableImages,
-            fn (string $img) => $img !== $mainImage
-        ));
-
-        // Combinar: principal + otras (máx. 6 imágenes por propiedad)
-        $imagesToUse = array_slice(array_merge([$mainImage], $others), 0, 6);
-
-        // Textos descriptivos para cada posición
-        $captions = [
-            'Vista frontal',
-            'Sala de estar',
-            'Cocina',
-            'Dormitorio principal',
-            'Baño',
-            'Área exterior',
-        ];
-
-        foreach ($imagesToUse as $order => $path) {
-            PropImage::create([
-                'property_id' => $property->id,
-                'path' => $path,
-                'caption' => $captions[$order] ?? null,
-                'order' => $order,
-            ]);
-        }
+        $this->command->info("PropImageSeeder: {$created} imágenes de galería creadas para {$properties->count()} propiedades.");
     }
 }

@@ -6,7 +6,7 @@
             <div class="col-12 col-md-8 col-lg-5 col-xl-4">
               <div class="card">
                 <div class="card-body">
-                  <h5 class="card-title mt-5">Login Admin</h5>
+                  <h5 class="card-title mt-5">Umbral — Admin Login</h5>
                   @if ($errors->any())
                     <div class="alert alert-danger mb-3">
                       {{ $errors->first() }}

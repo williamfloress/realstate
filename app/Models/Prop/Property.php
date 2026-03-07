@@ -2,6 +2,8 @@
 
 namespace App\Models\Prop;
 
+use App\Models\Acabado;
+use App\Models\Sector;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -52,6 +54,12 @@ class Property extends Model
         'agent_id',
         'closed_at',
         'reserved_at',
+        'sector_id',
+        'area_construccion_m2',
+        'parqueos',
+        'acabado_piso_id',
+        'acabado_cocina_id',
+        'acabado_bano_id',
     ];
 
     /**
@@ -69,6 +77,8 @@ class Property extends Model
             'beds' => 'integer',
             'baths' => 'integer',
             'sqft' => 'integer',
+            'parqueos' => 'integer',
+            'area_construccion_m2' => 'decimal:2',
             'year_built' => 'integer',
             'featured' => 'boolean',
             'closed_at' => 'datetime',
@@ -100,6 +110,38 @@ class Property extends Model
     public function homeType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(HomeType::class);
+    }
+
+    /**
+     * Sector/ubicación para AMC.
+     */
+    public function sector(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Sector::class);
+    }
+
+    /**
+     * Acabado de piso.
+     */
+    public function acabadoPiso(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Acabado::class, 'acabado_piso_id');
+    }
+
+    /**
+     * Acabado de cocina.
+     */
+    public function acabadoCocina(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Acabado::class, 'acabado_cocina_id');
+    }
+
+    /**
+     * Acabado de baño.
+     */
+    public function acabadoBano(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Acabado::class, 'acabado_bano_id');
     }
 
     /**

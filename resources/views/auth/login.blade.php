@@ -11,7 +11,7 @@
         <div class="container">
             <div class="row align-items-center justify-content-center text-center">
                 <div class="col-md-10">
-                    <h1 class="mb-2">Log In</h1>
+                    <h1 class="mb-2">{{ __('messages.Log In') }}</h1>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
                     data-aos="fade-up"
                     data-aos-delay="100"
                 >
-                    <h3 class="h4 text-black widget-title mb-3">Login</h3>
+                    <h3 class="h4 text-black widget-title mb-3">{{ __('messages.Login') }}</h3>
 
                     <form
                         method="POST"
@@ -36,7 +36,7 @@
                         @csrf
 
                         <div class="form-group">
-                            <label for="email">Email</label>
+                            <label for="email">{{ __('messages.E-Mail Address') }}</label>
                             <input
                                 type="email"
                                 id="email"
@@ -55,7 +55,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="password">Password</label>
+                            <label for="password">{{ __('messages.Password') }}</label>
                             <input
                                 type="password"
                                 id="password"
@@ -82,7 +82,7 @@
                                     {{ old('remember') ? 'checked' : '' }}
                                 >
                                 <label class="form-check-label" for="remember">
-                                    {{ __('Remember Me') }}
+                                    {{ __('messages.Remember Me') }}
                                 </label>
                             </div>
                         </div>
@@ -91,10 +91,10 @@
                             <input
                                 type="submit"
                                 class="btn btn-primary"
-                                value="{{ __('Login') }}"
+                                value="{{ __('messages.Login') }}"
                             >
                             <a class="btn btn-link" href="{{ route('password.request') }}">
-                                {{ __('Forgot Your Password?') }}
+                                {{ __('messages.Forgot Your Password?') }}
                             </a>
                         </div>
                     </form>

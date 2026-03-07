@@ -28,6 +28,19 @@ class LoginController extends Controller
     protected $redirectTo = '/home';
 
     /**
+     * Redirect to the intended URL or a custom redirect stored in session.
+     */
+    protected function redirectTo()
+    {
+        if (session()->has('redirect')) {
+            $url = session('redirect');
+            session()->forget('redirect');
+            return $url;
+        }
+        return '/home';
+    }
+
+    /**
      * Create a new controller instance.
      *
      * @return void

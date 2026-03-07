@@ -2,152 +2,213 @@
 
 namespace Database\Seeders;
 
+use App\Models\Acabado;
 use App\Models\Prop\HomeType;
 use App\Models\Prop\Property;
+use App\Models\Sector;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class PropertySeeder extends Seeder
 {
-    /**
-     * Seed properties usando imágenes de public/assets/images/
-     */
+    private array $images = [
+        'apto_1.png', 'apto_2_vista1.png', 'apto_3_vista1.png', 'apto_4_vista1.png',
+        'apto_1_vista2.png', 'apto_2_vista2.png', 'apto_3_vista2.png', 'apto_4_vista2.png',
+        'apto_1_vista3.png', 'apto_2_vista3.png', 'apto_3_vista3.png', 'apto_4_vista3.png',
+    ];
+
+    private array $typeNames = [
+        'Apartamento', 'Residencia', 'Estudio', 'PH',
+        'Loft', 'Apartamento', 'Residencia', 'Apartamento',
+    ];
+
     public function run(): void
     {
-        $agentId = User::first()?->id;
-        $homeTypes = HomeType::pluck('id', 'home_type');
+        $agents = User::where('role', User::ROLE_AGENT)->get();
+        $homeTypeId = HomeType::where('home_type', 'apartment')->value('id');
+        $sectors = Sector::all()->keyBy('nombre');
+        $acabados = $this->mapAcabados();
 
-        $properties = [
-            [
-                'title' => '871 Crenshaw Blvd',
-                'slug' => '871-crenshaw-blvd',
-                'description' => 'Amplia casa familiar con jardín y garaje para 2 autos. Zona residencial tranquila.',
-                'price' => 2250500,
-                'address' => '871 Crenshaw Blvd',
-                'city' => 'Los Angeles',
-                'state' => 'CA',
-                'zip' => '90005',
-                'country' => 'US',
-                'image' => 'hero_bg_1.jpg',
-                'status' => 'active',
-                'offer_type' => 'rent',
-                'beds' => 4,
-                'baths' => 3,
-                'sqft' => 2800,
-                'home_type_id' => $homeTypes['house'] ?? null,
-                'year_built' => 2015,
-                'price_per_sqft' => 803.75,
-                'featured' => true,
+        $agentIds = array_filter([
+            $agents->firstWhere('email', 'maria.rodriguez@umbral.com')?->id,
+            $agents->firstWhere('email', 'carlos.mendoza@umbral.com')?->id,
+            $agents->firstWhere('email', 'valentina.torres@umbral.com')?->id,
+        ]);
+
+        if (empty($agentIds)) {
+            $this->command->warn('No se encontraron agentes. Ejecuta DatabaseSeeder primero.');
+            return;
+        }
+
+        $agentIds = array_values($agentIds);
+        $sectorData = $this->buildSectorData();
+
+        $imageIdx = 0;
+        $agentIdx = 0;
+        $totalCreated = 0;
+
+        foreach ($sectorData as $sectorName => $properties) {
+            $sector = $sectors[$sectorName] ?? null;
+            if (!$sector) {
+                $this->command->warn("Sector {$sectorName} no encontrado, saltando.");
+                continue;
+            }
+
+            foreach ($properties as $i => $row) {
+                [$price, $area, $beds, $baths, $parking, $year, $offer, $piso, $cocina, $bano] = $row;
+
+                $typeName = $this->typeNames[$i % count($this->typeNames)];
+                $num = $i + 1;
+                $title = "{$typeName} en {$sectorName} #{$num}";
+                $slug = Str::slug($title);
+
+                if (Property::where('slug', $slug)->exists()) {
+                    continue;
+                }
+
+                $pricePerSqft = $offer === 'sale' && $area > 0 ? round($price / $area, 2) : null;
+
+                Property::create([
+                    'title'                => $title,
+                    'slug'                 => $slug,
+                    'description'          => "Propiedad ubicada en {$sectorName}, Caracas. {$beds} hab., {$baths} baños, {$parking} est. Área de {$area} m².",
+                    'price'                => $price,
+                    'address'              => "Urb. {$sectorName}, Caracas",
+                    'city'                 => 'Caracas',
+                    'state'                => 'Miranda',
+                    'country'              => 'VE',
+                    'image'                => $this->images[$imageIdx % count($this->images)],
+                    'status'               => Property::STATUS_ACTIVE,
+                    'offer_type'           => $offer,
+                    'beds'                 => $beds,
+                    'baths'                => $baths,
+                    'sqft'                 => (int) round($area),
+                    'area_construccion_m2' => $area,
+                    'parqueos'             => $parking,
+                    'year_built'           => $year,
+                    'price_per_sqft'       => $pricePerSqft,
+                    'home_type_id'         => $homeTypeId,
+                    'sector_id'            => $sector->id,
+                    'agent_id'             => $agentIds[$agentIdx % count($agentIds)],
+                    'featured'             => $i < 2,
+                    'acabado_piso_id'      => $acabados['piso'][$piso] ?? null,
+                    'acabado_cocina_id'    => $acabados['cocina'][$cocina] ?? null,
+                    'acabado_bano_id'      => $acabados['bano'][$bano] ?? null,
+                ]);
+
+                $imageIdx++;
+                $agentIdx++;
+                $totalCreated++;
+            }
+        }
+
+        $this->command->info("PropertySeeder: {$totalCreated} propiedades creadas en " . count($sectorData) . ' sectores.');
+    }
+
+    /**
+     * Datos por sector: [precio, area_m2, hab, baños, parqueos, año, oferta, piso, cocina, baño].
+     * Las áreas están agrupadas para que el AMC (±15%) encuentre suficientes comparables.
+     */
+    private function buildSectorData(): array
+    {
+        return [
+            'CHACAO' => [
+                [250000, 105, 2, 2, 1, 2020, 'sale', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [290000, 120, 3, 2, 2, 2022, 'sale', 'Porcelanato', 'Cuarzo', 'Porcelanato'],
+                [215000,  90, 2, 1, 1, 2018, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [390000, 160, 4, 3, 2, 2023, 'sale', 'Marmol', 'Marmol', 'Marmol'],
+                [275000, 115, 3, 2, 1, 2019, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [310000, 128, 3, 2, 2, 2021, 'sale', 'Parquet', 'Cuarzo', 'Porcelanato'],
+                [1500,    72, 2, 1, 1, 2017, 'rent', 'Cerámica', 'Fórmica', 'Cerámica'],
+                [260000, 110, 2, 2, 1, 2020, 'sale', 'Porcelanato', 'Granito', 'Cerámica'],
             ],
-            [
-                'title' => '625 S. Berendo St Unit 607',
-                'slug' => '625-berendo-st-unit-607',
-                'description' => 'Apartamento moderno en edificio céntrico. Vista panorámica y amenities incluidos.',
-                'price' => 1000500,
-                'address' => '625 S. Berendo St Unit 607',
-                'city' => 'Los Angeles',
-                'state' => 'CA',
-                'zip' => '90005',
-                'country' => 'US',
-                'image' => 'hero_bg_2.jpg',
-                'status' => 'active',
-                'offer_type' => 'sale',
-                'beds' => 2,
-                'baths' => 2,
-                'sqft' => 1430,
-                'home_type_id' => $homeTypes['apartment'] ?? null,
-                'year_built' => 2018,
-                'price_per_sqft' => 699.65,
-                'featured' => true,
+
+            'ALTAMIRA' => [
+                [300000, 110, 2, 2, 1, 2021, 'sale', 'Porcelanato', 'Cuarzo', 'Porcelanato'],
+                [340000, 125, 3, 2, 2, 2022, 'sale', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [245000,  92, 2, 1, 1, 2019, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [520000, 190, 5, 4, 3, 2024, 'sale', 'Marmol', 'Marmol', 'Marmol'],
+                [310000, 115, 3, 2, 1, 2020, 'sale', 'Porcelanato', 'Granito', 'Cerámica'],
+                [360000, 132, 3, 3, 2, 2023, 'sale', 'Parquet', 'Cuarzo', 'Porcelanato'],
+                [2200,    80, 2, 1, 1, 2020, 'rent', 'Cerámica', 'Fórmica', 'Cerámica'],
+                [280000, 105, 2, 2, 1, 2021, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
             ],
-            [
-                'title' => 'Condo con vista al mar',
-                'slug' => 'condo-vista-mar',
-                'description' => 'Condominio de lujo a pasos de la playa. Piscina, gimnasio y seguridad 24h.',
-                'price' => 850000,
-                'address' => '1500 Ocean Ave',
-                'city' => 'Miami Beach',
-                'state' => 'FL',
-                'zip' => '33139',
-                'country' => 'US',
-                'image' => 'img_1.jpg',
-                'status' => 'active',
-                'offer_type' => 'sale',
-                'beds' => 3,
-                'baths' => 2,
-                'sqft' => 1850,
-                'home_type_id' => $homeTypes['condo'] ?? null,
-                'year_built' => 2020,
-                'price_per_sqft' => 459.46,
-                'featured' => false,
+
+            'LAS MERCEDES' => [
+                [230000, 105, 2, 2, 1, 2020, 'sale', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [270000, 122, 3, 2, 2, 2022, 'sale', 'Porcelanato', 'Cuarzo', 'Porcelanato'],
+                [195000,  88, 2, 1, 1, 2018, 'sale', 'Cerámica', 'Fórmica', 'Cerámica'],
+                [385000, 168, 4, 3, 2, 2023, 'sale', 'Marmol', 'Cuarzo', 'Marmol'],
+                [245000, 112, 3, 2, 1, 2019, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [290000, 130, 3, 2, 2, 2021, 'sale', 'Parquet', 'Granito', 'Porcelanato'],
+                [1200,    60, 1, 1, 1, 2020, 'rent', 'Cerámica', 'Fórmica', 'Cerámica'],
+                [240000, 110, 2, 2, 1, 2020, 'sale', 'Porcelanato', 'Granito', 'Cerámica'],
             ],
-            [
-                'title' => 'Casa familiar en Brooklyn',
-                'slug' => 'casa-familiar-brooklyn',
-                'description' => 'Encantadora casa de dos plantas con patio trasero. Ideal para familias.',
-                'price' => 1250000,
-                'address' => '245 Park Slope Ave',
-                'city' => 'Brooklyn',
-                'state' => 'NY',
-                'zip' => '11215',
-                'country' => 'US',
-                'image' => 'img_2.jpg',
-                'status' => 'active',
-                'offer_type' => 'sale',
-                'beds' => 5,
-                'baths' => 4,
-                'sqft' => 3200,
-                'home_type_id' => $homeTypes['house'] ?? null,
-                'year_built' => 1995,
-                'price_per_sqft' => 390.63,
-                'featured' => false,
+
+            'LOS PALOS GRANDES' => [
+                [240000, 102, 2, 2, 1, 2020, 'sale', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [280000, 118, 3, 2, 2, 2021, 'sale', 'Porcelanato', 'Cuarzo', 'Porcelanato'],
+                [200000,  86, 2, 1, 1, 2018, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [400000, 170, 4, 3, 2, 2023, 'sale', 'Marmol', 'Cuarzo', 'Marmol'],
+                [260000, 113, 3, 2, 1, 2019, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [300000, 128, 3, 3, 2, 2022, 'sale', 'Parquet', 'Cuarzo', 'Porcelanato'],
+                [1400,    68, 2, 1, 1, 2019, 'rent', 'Cerámica', 'Fórmica', 'Cerámica'],
+                [245000, 108, 2, 2, 1, 2020, 'sale', 'Porcelanato', 'Granito', 'Cerámica'],
             ],
-            [
-                'title' => 'Apartamento en Manhattan',
-                'slug' => 'apartamento-manhattan',
-                'description' => 'Loft de diseño en zona premium. Techos altos y grandes ventanales.',
-                'price' => 3200,
-                'address' => '88 5th Ave',
-                'city' => 'New York',
-                'state' => 'NY',
-                'zip' => '10011',
-                'country' => 'US',
-                'image' => 'img_3.jpg',
-                'status' => 'active',
-                'offer_type' => 'rent',
-                'beds' => 2,
-                'baths' => 1,
-                'sqft' => 1100,
-                'home_type' => 'apartment',
-                'year_built' => 2010,
-                'price_per_sqft' => null,
-                'featured' => false,
+
+            'VALLE ARRIBA' => [
+                [420000, 150, 3, 3, 2, 2022, 'sale', 'Marmol', 'Cuarzo', 'Porcelanato'],
+                [365000, 130, 3, 2, 2, 2021, 'sale', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [490000, 172, 4, 3, 3, 2023, 'sale', 'Marmol', 'Marmol', 'Marmol'],
+                [305000, 108, 2, 2, 1, 2020, 'sale', 'Porcelanato', 'Granito', 'Cerámica'],
+                [345000, 122, 3, 2, 2, 2021, 'sale', 'Porcelanato', 'Cuarzo', 'Porcelanato'],
+                [400000, 142, 3, 3, 2, 2022, 'sale', 'Parquet', 'Cuarzo', 'Porcelanato'],
+                [3000,    95, 2, 2, 1, 2021, 'rent', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [470000, 165, 4, 3, 2, 2023, 'sale', 'Porcelanato', 'Marmol', 'Marmol'],
             ],
-            [
-                'title' => 'Terreno comercial en zona industrial',
-                'slug' => 'terreno-comercial-industrial',
-                'description' => 'Lote amplio con acceso a carretera principal. Ideal para bodega o negocio.',
-                'price' => 450000,
-                'address' => '1200 Industrial Blvd',
-                'city' => 'Houston',
-                'state' => 'TX',
-                'zip' => '77001',
-                'country' => 'US',
-                'image' => 'img_4.jpg',
-                'status' => 'active',
-                'offer_type' => 'sale',
-                'beds' => null,
-                'baths' => null,
-                'sqft' => 15000,
-                'home_type_id' => $homeTypes['commercial'] ?? null,
-                'year_built' => null,
-                'price_per_sqft' => 30,
-                'featured' => false,
+
+            'LA TAHONA' => [
+                [140000, 108, 3, 2, 2, 2016, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [125000,  95, 2, 2, 1, 2013, 'sale', 'Terracota', 'Fórmica', 'Cerámica'],
+                [170000, 130, 3, 3, 2, 2018, 'sale', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [100000,  78, 2, 1, 1, 2010, 'sale', 'Terracota', 'Fórmica', 'Cerámica'],
+                [155000, 118, 3, 2, 1, 2017, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [180000, 138, 3, 2, 2, 2019, 'sale', 'Porcelanato', 'Cuarzo', 'Porcelanato'],
+                [800,     82, 2, 1, 1, 2014, 'rent', 'Cerámica', 'Fórmica', 'Cerámica'],
+                [150000, 115, 3, 2, 1, 2016, 'sale', 'Machiembrado', 'Granito', 'Cerámica'],
+            ],
+
+            'EL HATILLO' => [
+                [120000, 108, 3, 2, 2, 2015, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [100000,  92, 2, 1, 1, 2011, 'sale', 'Terracota', 'Fórmica', 'Cerámica'],
+                [155000, 135, 3, 3, 2, 2018, 'sale', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [80000,   72, 2, 1, 1, 2009, 'sale', 'Terracota', 'Fórmica', 'Cerámica'],
+                [135000, 120, 3, 2, 1, 2016, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [145000, 128, 3, 2, 2, 2017, 'sale', 'Porcelanato', 'Cuarzo', 'Porcelanato'],
+                [700,     78, 2, 1, 1, 2013, 'rent', 'Cerámica', 'Fórmica', 'Cerámica'],
+                [130000, 115, 3, 2, 1, 2015, 'sale', 'Machiembrado', 'Granito', 'Cerámica'],
+            ],
+
+            'BARUTA' => [
+                [130000, 110, 3, 2, 2, 2017, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [105000,  88, 2, 1, 1, 2013, 'sale', 'Terracota', 'Fórmica', 'Cerámica'],
+                [165000, 135, 3, 3, 2, 2019, 'sale', 'Porcelanato', 'Granito', 'Porcelanato'],
+                [85000,   70, 1, 1, 1, 2011, 'sale', 'Terracota', 'Fórmica', 'Cerámica'],
+                [145000, 118, 3, 2, 1, 2018, 'sale', 'Cerámica', 'Granito', 'Cerámica'],
+                [175000, 142, 3, 2, 2, 2020, 'sale', 'Porcelanato', 'Cuarzo', 'Porcelanato'],
+                [750,     75, 2, 1, 1, 2015, 'rent', 'Cerámica', 'Fórmica', 'Cerámica'],
+                [155000, 125, 3, 2, 2, 2018, 'sale', 'Machiembrado', 'Granito', 'Porcelanato'],
             ],
         ];
+    }
 
-        foreach ($properties as $data) {
-            Property::create(array_merge($data, ['agent_id' => $agentId]));
+    private function mapAcabados(): array
+    {
+        $map = ['piso' => [], 'cocina' => [], 'bano' => []];
+        foreach (Acabado::all() as $a) {
+            $map[$a->tipo][$a->nombre] = $a->id;
         }
+        return $map;
     }
 }

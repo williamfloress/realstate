@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ app()->getLocale() === 'es' ? 'es' : 'en' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,10 +9,9 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Fuentes y CSS del template (Bootstrap, Owl, AOS, etc.) desde public/assets -->
-    <!-- Fonts -->
+    <!-- Fuentes Umbral: Playfair Display (títulos) + Montserrat (cuerpo) -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- Imported Css Files -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,700,900|Roboto+Mono:300,400,500">
@@ -30,10 +29,34 @@
     <link rel="stylesheet" href="{{ asset('assets/css/aos.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <style>
-        /* Icono clickeable para abrir el dropdown del select */
-        .select-wrap .select-dropdown-trigger {
-            cursor: pointer;
+        :root {
+            --umbral-primary: #2C3E50;
+            --umbral-accent: #D4A373;
+            --umbral-bg: #FAFAFA;
         }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--umbral-bg); }
+        h1, h2, h3, h4, h5, h6,
+        .site-section-title h2,
+        .property-title a,
+        .service-heading { font-family: 'Playfair Display', serif; }
+        .site-navbar .site-menu > li > a { font-family: 'Montserrat', sans-serif; }
+        .btn-success, .bg-success { background-color: var(--umbral-accent) !important; border-color: var(--umbral-accent) !important; }
+        .text-success { color: var(--umbral-accent) !important; }
+        .site-navbar { background: transparent; position: absolute; width: 100%; z-index: 10; }
+        .site-navbar .site-navigation .site-menu > li > a { color: #fff !important; }
+        .site-navbar .site-navigation .site-menu > li > a:hover { color: var(--umbral-accent) !important; }
+        .site-blocks-cover { position: relative; }
+        .site-blocks-cover::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 220px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .footer-heading { font-family: 'Playfair Display', serif; }
+        .select-wrap .select-dropdown-trigger { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -44,8 +67,8 @@
                 <div class="row align-items-center">
                     <div class="col-8 col-md-8 col-lg-4">
                         <h1 class="mb-0">
-                            <a href="{{ url('/') }}" class="text-white h2 mb-0">
-                                <strong>RealState<span class="text-danger">.</span></strong>
+                            <a href="{{ url('/') }}" class="text-white h2 mb-0" style="font-family:'Playfair Display',serif;">
+                                <strong>Umbral<span style="color:#D4A373;">.</span></strong>
                             </a>
                         </h1>
                     </div>
@@ -59,48 +82,43 @@
 
                             <ul class="site-menu js-clone-nav d-none d-lg-block">
                                 <li class="active">
-                                    <a href="{{ url('/') }}">Home</a>
+                                    <a href="{{ url('/') }}">{{ __('messages.Home') }}</a>
                                 </li>
-                                <li><a href="{{ route('properties.byType', 'buy') }}">Buy</a></li>
-                                <li><a href="{{ route('properties.byType', 'rent') }}">Rent</a></li>
                                 <li class="has-children">
-                                    <a href="{{ route('properties.index') }}">Properties</a>
+                                    <a href="{{ route('properties.index') }}">{{ __('messages.Properties') }}</a>
                                     <ul class="dropdown arrow-top">
-                                        @foreach ($homeTypes ?? [] as $ht)
-                                            <li><a href="{{ route('properties.byHomeType', $ht->home_type) }}">{{ $ht->name }}</a></li>
-                                        @endforeach
+                                        <li><a href="{{ route('properties.byType', 'rent') }}">{{ __('messages.For Rent') }}</a></li>
+                                        <li><a href="{{ route('properties.byType', 'buy') }}">{{ __('messages.For Sale') }}</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="{{ route('about') }}">About</a></li>
-                                <li><a href="{{ route('contact') }}">Contact</a></li>
-                                <!-- Invitado: Login/Register. Autenticado: nombre de usuario + dropdown (Dashboard, Logout). Bootstrap 4: data-toggle, dropdown-menu-right -->
+                                <li><a href="{{ route('about') }}">{{ __('messages.About') }}</a></li>
+                                <li><a href="{{ route('contact') }}">{{ __('messages.Contact') }}</a></li>
                                 @guest
                                     @if (Route::has('login'))
-                                        <li><a href="{{ route('login') }}">Login</a></li>
+                                        <li><a href="{{ route('login') }}">{{ __('messages.Login') }}</a></li>
                                     @endif
                                     @if (Route::has('register'))
-                                        <li><a href="{{ route('register') }}">Register</a></li>
+                                        <li><a href="{{ route('register') }}">{{ __('messages.Register') }}</a></li>
                                     @endif
                                 @else
-                                    <li class="nav-item dropdown">
-                                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                            {{ Auth::user()->name }}
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                            <a class="dropdown-item" href="{{ route('user.requests') }}">Mis solicitudes</a>
-                                            <a class="dropdown-item" href="{{ route('user.favorites') }}">Mis favoritos</a>
-                                            <!-- Logout vía POST: el enlace envía el formulario oculto con CSRF -->
-                                            <a class="dropdown-item" href="{{ route('logout') }}"
-                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                                {{ __('Logout') }}
-                                            </a>
-                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                                @csrf
-                                            </form>
-                                        </div>
+                                    <li class="has-children">
+                                        <a href="#">{{ Auth::user()->name }}</a>
+                                        <ul class="dropdown arrow-top">
+                                            @if (Auth::user()->isAgent())
+                                                <li><a href="{{ route('agent.dashboard') }}">{{ __('messages.Panel de agente') }}</a></li>
+                                            @else
+                                                <li><a href="{{ route('agent.apply') }}">{{ __('messages.Trabaja con nosotros') }}</a></li>
+                                                <li><a href="{{ route('user.requests') }}">{{ __('messages.Mis solicitudes') }}</a></li>
+                                                <li><a href="{{ route('user.favorites') }}">{{ __('messages.Mis favoritos') }}</a></li>
+                                            @endif
+                                            <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('messages.Cerrar sesión') }}</a></li>
+                                        </ul>
                                     </li>
                                 @endguest
                             </ul>
+                            @auth
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+                            @endauth
                         </nav>
                     </div>
                 </div>
@@ -119,8 +137,8 @@
         <div class="row">
           <div class="col-lg-4">
             <div class="mb-5">
-              <h3 class="footer-heading mb-4">About RealState</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe pariatur reprehenderit vero atque, consequatur id ratione, et non dignissimos culpa? Ut veritatis, quos illum totam quis blanditiis, minima minus odio!</p>
+              <h3 class="footer-heading mb-4">{{ __('messages.About Umbral') }}</h3>
+              <p>{{ __('messages.umbral_about_text') }}</p>
             </div>
 
             
@@ -129,22 +147,25 @@
           <div class="col-lg-4 mb-5 mb-lg-0">
             <div class="row mb-5">
               <div class="col-md-12">
-                <h3 class="footer-heading mb-4">Navigations</h3>
+                <h3 class="footer-heading mb-4">{{ __('messages.Navigations') }}</h3>
               </div>
               <div class="col-md-6 col-lg-6">
                 <ul class="list-unstyled">
-                  <li><a href="{{ route('home') }}">Home</a></li>
-                  <li><a href="{{ route('properties.byType', 'buy') }}">Buy</a></li>
-                  <li><a href="{{ route('properties.byType', 'rent') }}">Rent</a></li>
-                  <li><a href="{{ route('properties.index') }}">Properties</a></li>
+                  <li><a href="{{ route('home') }}">{{ __('messages.Home') }}</a></li>
+                  <li><a href="{{ route('properties.byType', 'buy') }}">{{ __('messages.Buy') }}</a></li>
+                  <li><a href="{{ route('properties.byType', 'rent') }}">{{ __('messages.Rent') }}</a></li>
+                  <li><a href="{{ route('properties.index') }}">{{ __('messages.Properties') }}</a></li>
                 </ul>
               </div>
               <div class="col-md-6 col-lg-6">
                 <ul class="list-unstyled">
-                  <li><a href="{{ route('about') }}">About Us</a></li>
-                  <li><a href="#">Privacy Policy</a></li>
-                  <li><a href="{{ route('contact') }}">Contact Us</a></li>
-                  <li><a href="#">Terms</a></li>
+                  <li><a href="{{ route('about') }}">{{ __('messages.About Us') }}</a></li>
+                  <li><a href="#">{{ __('messages.Privacy Policy') }}</a></li>
+                  <li><a href="{{ route('contact') }}">{{ __('messages.Contact Us') }}</a></li>
+                  <li><a href="#">{{ __('messages.Terms') }}</a></li>
+                  @guest
+                  <li><a href="{{ route('agent.apply') }}">{{ __('messages.Registrarse como agente') }}</a></li>
+                  @endguest
                 </ul>
               </div>
             </div>
@@ -153,7 +174,7 @@
           </div>
 
           <div class="col-lg-4 mb-5 mb-lg-0">
-            <h3 class="footer-heading mb-4">Follow Us</h3>
+            <h3 class="footer-heading mb-4">{{ __('messages.Follow Us') }}</h3>
 
                 <div>
                   <a href="#" class="pl-0 pr-3"><span class="icon-facebook"></span></a>
@@ -169,10 +190,15 @@
         </div>
         <div class="row pt-5 mt-5 text-center">
           <div class="col-md-12">
-            <p>
+            <p class="mb-2">
             <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-            Copyright &copy;<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart text-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >Colorlib</a>
+            Umbral &copy; <script>document.write(new Date().getFullYear());</script> — Construyendo puentes, encontrando hogares. | Template by <a href="https://colorlib.com" target="_blank">Colorlib</a>
             <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            </p>
+            <p class="mb-0">
+              <a href="{{ route('locale.switch', 'es') }}" class="{{ app()->getLocale() === 'es' ? 'font-weight-bold' : '' }}">Español</a>
+              <span class="mx-2">|</span>
+              <a href="{{ route('locale.switch', 'en') }}" class="{{ app()->getLocale() === 'en' ? 'font-weight-bold' : '' }}">English</a>
             </p>
           </div>
           
