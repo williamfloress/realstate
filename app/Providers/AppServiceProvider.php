@@ -36,15 +36,23 @@ class AppServiceProvider extends ServiceProvider
 
         Paginator::useBootstrapFour();
 
-        $homeTypes = Schema::hasTable('home_types')
-            ? HomeType::orderBy('order')->get()
-            : collect();
+        try {
+            $homeTypes = Schema::hasTable('home_types')
+                ? HomeType::orderBy('order')->get()
+                : collect();
+        } catch (\Throwable $e) {
+            $homeTypes = collect();
+        }
         View::share('homeTypes', $homeTypes);
 
         View::composer('home', function ($view) {
-            $cities = Schema::hasTable('properties')
-                ? Property::distinct()->whereNotNull('city')->orderBy('city')->pluck('city')
-                : collect();
+            try {
+                $cities = Schema::hasTable('properties')
+                    ? Property::distinct()->whereNotNull('city')->orderBy('city')->pluck('city')
+                    : collect();
+            } catch (\Throwable $e) {
+                $cities = collect();
+            }
             $view->with('cities', $cities);
         });
     }
