@@ -1,0 +1,20 @@
+[variables]
+    PHP_VERSION = '8.2' # O la versión que estés usando en tu PC
+
+[phases.setup]
+    nixPkgs = [
+        'php82',
+        'php82Extensions.gd',
+        'php82Extensions.bcmath',
+        'php82Extensions.pdo_mysql',
+        'php82Extensions.mbstring',
+        'php82Extensions.xml',
+        'php82Extensions.curl',
+        'php82Extensions.zip'
+    ]
+
+[phases.build]
+    cmds = [
+        'composer install --no-dev --no-interaction --optimize-autoloader',
+        'npm install && npm run build'
+    ]
